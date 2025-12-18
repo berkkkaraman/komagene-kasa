@@ -128,10 +128,13 @@ export function IncomeForm({ initialData, initialImage, onSave }: IncomeFormProp
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* ONLINE SECTION */}
-                <Card className="bg-orange-50/50 dark:bg-orange-950/10 border-orange-100 shadow-sm">
+                <Card className="bg-orange-50/30 dark:bg-orange-950/5 border-orange-100/50 shadow-none backdrop-blur-sm">
                     <CardContent className="pt-4 space-y-4">
-                        <h4 className="font-semibold text-orange-700 text-sm flex items-center gap-2">
-                            <Globe className="w-4 h-4" /> Online Siparişler
+                        <h4 className="font-bold text-orange-700 dark:text-orange-400 text-sm flex items-center gap-2">
+                            <div className="p-1.5 bg-orange-500/10 rounded-lg text-orange-600">
+                                <Globe className="w-4 h-4" />
+                            </div>
+                            Online Siparişler
                         </h4>
                         <div className="space-y-3">
                             {Object.entries(data.online).map(([key, val]) => (
@@ -156,10 +159,13 @@ export function IncomeForm({ initialData, initialImage, onSave }: IncomeFormProp
                 </Card>
 
                 {/* MEAL CARD SECTION */}
-                <Card className="bg-purple-50/50 dark:bg-purple-950/10 border-purple-100 shadow-sm">
+                <Card className="bg-purple-50/30 dark:bg-purple-950/5 border-purple-100/50 shadow-none backdrop-blur-sm">
                     <CardContent className="pt-4 space-y-4">
-                        <h4 className="font-semibold text-purple-700 text-sm flex items-center gap-2">
-                            <Utensils className="w-4 h-4" /> Yemek Kartları
+                        <h4 className="font-bold text-purple-700 dark:text-purple-400 text-sm flex items-center gap-2">
+                            <div className="p-1.5 bg-purple-500/10 rounded-lg text-purple-600">
+                                <Utensils className="w-4 h-4" />
+                            </div>
+                            Yemek Kartları
                         </h4>
                         <div className="space-y-3">
                             {Object.entries(data.mealCard).map(([key, val]) => (

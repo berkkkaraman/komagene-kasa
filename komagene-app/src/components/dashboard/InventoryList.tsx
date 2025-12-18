@@ -37,11 +37,11 @@ export function InventoryList({ items, onUpdate }: InventoryListProps) {
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {currentItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 border rounded-xl bg-card hover:bg-accent/30 transition-all">
-                        <span className="font-medium text-sm">{item.name}</span>
-                        <div className="flex gap-1">
+                    <div key={item.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/50 dark:bg-accent/10 border border-white/20 dark:border-white/5 hover:bg-white/80 dark:hover:bg-accent/20 transition-all shadow-sm group">
+                        <span className="font-bold text-sm tracking-tight text-foreground/80 group-hover:text-primary transition-colors">{item.name}</span>
+                        <div className="flex gap-1.5">
                             <StatusButton
                                 active={item.status === 'ok'}
                                 onClick={() => updateStatus(item.id, 'ok')}
@@ -102,10 +102,10 @@ function StatusButton({ active, onClick, variant, icon: Icon }: { active: boolea
         <Button
             variant="outline"
             size="icon"
-            className={cn("h-9 w-9 rounded-xl border-2 transition-all active:scale-95", colors[variant])}
+            className={cn("h-10 w-10 rounded-2xl border-2 transition-all active:scale-90", colors[variant])}
             onClick={onClick}
         >
-            <Icon className={cn("h-5 w-5", active ? "stroke-[3px]" : "stroke-[2px]")} />
+            <Icon className={cn("h-5 w-5", active ? "stroke-[3.5px]" : "stroke-[2px]")} />
         </Button>
     );
 }

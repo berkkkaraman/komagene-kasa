@@ -33,20 +33,19 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 358 79% 47%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 84% 6%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 84% 6%;
     --popover-foreground: 210 40% 98%;
 
-    /* Keep Brand Red or make slightly brighter for dark mode? Keeping consistent for now */
     --primary: 358 79% 47%;
     --primary-foreground: 210 40% 98%;
 
@@ -74,6 +73,28 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(358, 79%, 47%, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(222, 47%, 11%, 0.03) 0px, transparent 50%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 dark:bg-card/40 backdrop-blur-md border-white/20 dark:border-white/5 shadow-xl transition-all duration-300;
+  }
+  
+  .glass-sidebar {
+    @apply bg-white/80 dark:bg-card/60 backdrop-blur-xl border-r border-white/10 dark:border-white/5;
+  }
+
+  .premium-shadow {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+  }
+
+  .nav-link-active {
+    @apply bg-primary/10 text-primary dark:bg-primary/20 shadow-[0_0_20px_rgba(215,25,32,0.1)];
   }
 }

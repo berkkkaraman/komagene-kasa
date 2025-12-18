@@ -23,8 +23,8 @@ export function Sidebar() {
     return (
         <>
             {/* Mobile Trigger */}
-            <div className="md:hidden p-4 border-b flex items-center justify-between bg-white dark:bg-card">
-                <span className="font-bold text-lg text-primary">KOMAGENE</span>
+            <div className="md:hidden p-4 border-b flex items-center justify-between bg-white/80 dark:bg-card/80 backdrop-blur-md sticky top-0 z-50">
+                <span className="font-bold text-lg tracking-tight text-primary">KOMAGENE</span>
                 <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -41,7 +41,7 @@ export function Sidebar() {
             </div>
 
             {/* Desktop Sidebar */}
-            <div className="hidden md:flex h-screen w-64 flex-col fixed left-0 top-0 border-r bg-card text-card-foreground">
+            <div className="hidden md:flex h-screen w-64 flex-col fixed left-0 top-0 glass-sidebar z-40">
                 <SidebarContent pathname={pathname} />
             </div>
 
@@ -76,12 +76,17 @@ function SidebarContent({ pathname, setOpen }: { pathname: string; setOpen?: (va
                         href={item.href}
                         onClick={close}
                         className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                            pathname === item.href ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "text-muted-foreground"
+                            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group",
+                            pathname === item.href
+                                ? "nav-link-active"
+                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                         )}
                     >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
+                        <item.icon className={cn(
+                            "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
+                            pathname === item.href ? "text-primary" : "text-muted-foreground"
+                        )} />
+                        <span className="flex-1">{item.label}</span>
                     </Link>
                 ))}
             </nav>

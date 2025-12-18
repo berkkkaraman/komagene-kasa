@@ -205,10 +205,10 @@ export default function Dashboard() {
               <TabsTrigger value="ledger">Veresiye 📒</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="income" className="mt-4">
-              <Card>
+            <TabsContent value="income" className="mt-4 outline-none">
+              <Card className="glass-card border-none">
                 <CardHeader>
-                  <CardTitle>Günlük Gelir</CardTitle>
+                  <CardTitle className="text-xl font-bold tracking-tight">Günlük Gelir</CardTitle>
                   <CardDescription>
                     {format(date, "d MMMM yyyy", { locale: tr })} tarihli kasa sayımı
                   </CardDescription>
@@ -223,10 +223,10 @@ export default function Dashboard() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="expense" className="mt-4">
-              <Card>
+            <TabsContent value="expense" className="mt-4 outline-none">
+              <Card className="glass-card border-none">
                 <CardHeader>
-                  <CardTitle>Harcama & Gider</CardTitle>
+                  <CardTitle className="text-xl font-bold tracking-tight">Harcama & Gider</CardTitle>
                   <CardDescription>Fiş/Fatura girişi yapın</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -245,10 +245,10 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </TabsContent>
-            <TabsContent value="ledger" className="mt-4">
-              <Card>
+            <TabsContent value="ledger" className="mt-4 outline-none">
+              <Card className="glass-card border-none">
                 <CardHeader>
-                  <CardTitle>Veresiye Defteri</CardTitle>
+                  <CardTitle className="text-xl font-bold tracking-tight">Veresiye Defteri</CardTitle>
                   <CardDescription>Müşteri borçlarını ve tahsilatları yönetin</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -297,10 +297,13 @@ export default function Dashboard() {
 
         {/* Right Col: Recent Activity */}
         <div className="space-y-6">
-          <Card>
+          <Card className="glass-card border-none">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <History className="h-5 w-5" /> Son Hareketler
+              <CardTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <History className="h-5 w-5 text-primary" />
+                </div>
+                Son Hareketler
               </CardTitle>
             </CardHeader>
             <CardContent>
