@@ -138,7 +138,7 @@ export function ShiftHandoff({ currentRecord, onComplete }: ShiftHandoffProps) {
             </CardContent>
             <CardFooter className="bg-muted/30 border-t p-6">
                 <Button
-                    className="w-full h-12 text-lg font-bold rounded-2xl gap-2 shadow-lg transition-all active:scale-[0.98]"
+                    className="w-full h-10 text-base font-bold rounded-xl gap-2 shadow-lg transition-all active:scale-[0.98]"
                     disabled={!isAllCompleted}
                     onClick={handleHandoff}
                 >

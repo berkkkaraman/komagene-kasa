@@ -278,11 +278,11 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Button onClick={() => setReconcileOpen(true)} variant="outline" className="w-full border-dashed border-primary/50 text-primary">
+                <Button onClick={() => setReconcileOpen(true)} variant="outline" className="w-full border-dashed border-primary/50 text-primary h-10 text-sm">
                   ⚖️ Kasa Sayımı Yap (Blind Count)
                 </Button>
-                <Button onClick={() => setHandoffOpen(true)} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl">
-                  <ClipboardCheck className="mr-2 h-5 w-5" /> Vardiya Teslimi (Kasa Kapat)
+                <Button onClick={() => setHandoffOpen(true)} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-10 text-sm rounded-lg">
+                  <ClipboardCheck className="mr-2 h-4 w-4" /> Vardiya Teslimi
                 </Button>
                 {records.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5).map(rec => {
                   const recInc = calculateIncome(rec.income);
