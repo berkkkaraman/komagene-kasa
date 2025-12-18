@@ -58,10 +58,10 @@ export function IncomeForm({ initialData, initialImage, onSave }: IncomeFormProp
             ...Object.values(data.mealCard)
         ];
 
-        const hasAnomaly = allValues.some(val => val > 5000);
+        const hasAnomaly = allValues.some(val => val > 20000);
 
         if (hasAnomaly) {
-            if (!confirm("⚠️ DİKKAT: 5.000 TL üzerinde bir giriş yaptınız. Bu tutar doğru mu? Yanlışlıkla fazla sıfır atmış olabilirsiniz.")) {
+            if (!confirm("⚠️ DİKKAT: 20.000 TL üzerinde bir giriş yaptınız. Bu tutar doğru mu? Yanlışlıkla fazla sıfır atmış olabilirsiniz.")) {
                 return;
             }
         }

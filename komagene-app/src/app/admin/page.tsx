@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { StorageService } from "@/services/storage";
+import { SupabaseService } from "@/services/supabase";
 import { AdminGuard } from "@/components/auth/AdminGuard";
 import { SyncManager } from "@/components/admin/SyncManager";
 import { Download, Upload, Trash2 } from "lucide-react";
@@ -39,11 +40,24 @@ function AdminPageContent() {
         reader.readAsText(file);
     };
 
-    const handleClearData = () => {
-        if (confirm("DİKKAT! Tüm veriler silinecek. Bu işlem geri alınamaz. Emin misiniz?")) {
-            localStorage.clear();
-            toast.info("Tüm veriler temizlendi");
-            setTimeout(() => window.location.href = "/", 1000);
+    const handleClearData = async () => {
+        if (confirm("DİKKAT! Tüm veriler (Bulut dahil) silinecek. Bu işlem geri alınamaz. Emin misiniz?")) {
+            const toastId = toast.loading("Veriler siliniyor...");
+
+            try {
+                // Clear Local Storage
+                localStorage.clear();
+
+                // Clear Cloud Data
+                const { error } = await SupabaseService.clearAllData();
+                if (error) throw error;
+
+                toast.success("Tüm veriler başarıyla temizlendi", { id: toastId });
+                setTimeout(() => window.location.href = "/", 1000);
+            } catch (error: any) {
+                console.error("Data clear failed:", error);
+                toast.error(`Hata: ${error.message || "Bulut verileri temizlenemedi"}`, { id: toastId });
+            }
         }
     };
 

@@ -101,5 +101,13 @@ export const SupabaseService = {
             .eq('id', id);
 
         if (error) throw error;
+    },
+
+    clearAllData: async () => {
+        // Delete all rows from both tables
+        const { error: recordsError } = await supabase.from('records').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        const { error: ledgerError } = await supabase.from('ledger').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+        return { error: recordsError || ledgerError };
     }
 };
