@@ -1,9 +1,11 @@
-import { DailyRecord, LegacyRow, ExpenseItem, DailyIncome } from '@/types';
+import { DailyRecord, LegacyRow, ExpenseItem, DailyIncome, LedgerItem, ShiftReport } from '@/types';
 
 const STORAGE_KEY = 'komagene_v2_data';
 const LEGACY_KEY = 'komagene_ledger_data';
+const LEDGER_KEY = 'komagene_v2_ledger';
 
 export const StorageService = {
+    // ... existing records methods ...
     getRecords: (): DailyRecord[] => {
         if (typeof window === 'undefined') return [];
         try {
@@ -53,6 +55,47 @@ export const StorageService = {
         const records = StorageService.getRecords();
         const newRecords = records.filter((r) => r.id !== id);
         StorageService.saveRecords(newRecords);
+    },
+
+    // Ledger (Veresiye) Methods
+    getLedger: (): LedgerItem[] => {
+        if (typeof window === 'undefined') return [];
+        try {
+            const data = localStorage.getItem(LEDGER_KEY);
+            return data ? JSON.parse(data) : [];
+        } catch (error) {
+            console.error('Failed to load ledger', error);
+            return [];
+        }
+    },
+
+    saveLedger: (items: LedgerItem[]) => {
+        try {
+            localStorage.setItem(LEDGER_KEY, JSON.stringify(items));
+        } catch (error) {
+            console.error('Failed to save ledger', error);
+        }
+    },
+
+    addLedgerItem: (item: LedgerItem) => {
+        const items = StorageService.getLedger();
+        items.push(item);
+        StorageService.saveLedger(items);
+    },
+
+    updateLedgerItem: (item: LedgerItem) => {
+        const items = StorageService.getLedger();
+        const index = items.findIndex((i) => i.id === item.id);
+        if (index !== -1) {
+            items[index] = item;
+            StorageService.saveLedger(items);
+        }
+    },
+
+    deleteLedgerItem: (id: string) => {
+        const items = StorageService.getLedger();
+        const newItems = items.filter((i) => i.id !== id);
+        StorageService.saveLedger(newItems);
     },
 
     exportData: () => {

@@ -9,21 +9,27 @@ import { StatsCards } from "@/components/dashboard/StatsCards";
 import { IncomeForm } from "@/components/dashboard/IncomeForm";
 import { ExpenseForm } from "@/components/dashboard/ExpenseForm";
 import { ReconcileDialog } from "@/components/dashboard/ReconcileDialog";
+import { ZReportCapture } from "@/components/dashboard/ZReportCapture";
 import { InventoryList } from "@/components/dashboard/InventoryList";
+import { LedgerList } from "@/components/dashboard/LedgerList";
+import { ShiftHandoff } from "@/components/dashboard/ShiftHandoff";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar"; // Assuming shadcn calendar
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, History, Trash2 } from "lucide-react";
+import { CalendarIcon, History, Trash2, Plus, ClipboardCheck, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ShiftReport } from "@/types";
 
 export default function Dashboard() {
   const [date, setDate] = useState<Date>(new Date());
   const [records, setRecords] = useState<DailyRecord[]>([]);
   const [mounted, setMounted] = useState(false);
   const [reconcileOpen, setReconcileOpen] = useState(false);
+  const [handoffOpen, setHandoffOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -107,6 +113,23 @@ export default function Dashboard() {
     toast.success("Stok durumu güncellendi");
   };
 
+  const handleVeresiyePayment = (amount: number) => {
+    const updated = {
+      ...currentRecord,
+      income: {
+        ...currentRecord.income,
+        cash: (currentRecord.income.cash || 0) + amount
+      }
+    };
+    saveRecord(updated);
+  };
+
+  const handleHandoffComplete = (report: ShiftReport) => {
+    const updated = { ...currentRecord, shiftReport: report };
+    saveRecord(updated);
+    setHandoffOpen(false);
+  };
+
   return (
     <div className="space-y-6 pt-4 pb-20">
       {/* Header & Date Picker */}
@@ -148,10 +171,11 @@ export default function Dashboard() {
         {/* Left Col: Forms */}
         <div className="lg:col-span-2 space-y-6">
           <Tabs defaultValue="income" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="income">Gelir Girişi</TabsTrigger>
-              <TabsTrigger value="expense">Gider Ekle</TabsTrigger>
-              <TabsTrigger value="inventory">Stok Takibi 📦</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="income">Gelir</TabsTrigger>
+              <TabsTrigger value="expense">Gider</TabsTrigger>
+              <TabsTrigger value="inventory">Stok 📦</TabsTrigger>
+              <TabsTrigger value="ledger">Veresiye 📒</TabsTrigger>
             </TabsList>
 
             <TabsContent value="income" className="mt-4">
@@ -191,6 +215,17 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <InventoryList items={currentRecord.inventory || []} onUpdate={handleInventoryUpdate} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="ledger" className="mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Veresiye Defteri</CardTitle>
+                  <CardDescription>Müşteri borçlarını ve tahsilatları yönetin</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <LedgerList onPaymentProcessed={handleVeresiyePayment} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -246,6 +281,9 @@ export default function Dashboard() {
                 <Button onClick={() => setReconcileOpen(true)} variant="outline" className="w-full border-dashed border-primary/50 text-primary">
                   ⚖️ Kasa Sayımı Yap (Blind Count)
                 </Button>
+                <Button onClick={() => setHandoffOpen(true)} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl">
+                  <ClipboardCheck className="mr-2 h-5 w-5" /> Vardiya Teslimi (Kasa Kapat)
+                </Button>
                 {records.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5).map(rec => {
                   const recInc = calculateIncome(rec.income);
                   const recExp = calculateExpense(rec.expenses);
@@ -279,6 +317,17 @@ export default function Dashboard() {
                   }}
                 />
               )}
+
+              <Dialog open={handoffOpen} onOpenChange={setHandoffOpen}>
+                <DialogContent className="max-w-2xl p-0 border-none bg-transparent shadow-none">
+                  {currentRecord && (
+                    <ShiftHandoff
+                      currentRecord={currentRecord}
+                      onComplete={handleHandoffComplete}
+                    />
+                  )}
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         </div>

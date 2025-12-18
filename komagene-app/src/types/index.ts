@@ -40,6 +40,7 @@ export interface DailyRecord {
     cashCount?: number; // Physical cash counted by staff
     reconciliationDiff?: number; // Difference (Count - System)
     inventory?: InventoryItem[]; // Stock status
+    shiftReport?: ShiftReport; // Closing checklist and notes
 }
 
 export type InventoryStatus = 'ok' | 'low' | 'out';
@@ -48,6 +49,26 @@ export interface InventoryItem {
     id: string;
     name: string;
     status: InventoryStatus;
+}
+
+export interface ShiftReport {
+    completedAt: string;
+    staffName?: string;
+    checklist: {
+        id: string;
+        label: string;
+        completed: boolean;
+    }[];
+    closingNote?: string;
+}
+
+export interface LedgerItem {
+    id: string;
+    customerName: string;
+    amount: number;
+    date: string;
+    isPaid: boolean;
+    paidAt?: string;
 }
 
 // Legacy Type for Migration
