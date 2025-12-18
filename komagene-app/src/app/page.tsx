@@ -16,7 +16,7 @@ import { LedgerList } from "@/components/dashboard/LedgerList";
 import { ShiftHandoff } from "@/components/dashboard/ShiftHandoff";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar"; // Assuming shadcn calendar
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -347,6 +347,10 @@ export default function Dashboard() {
 
               <Dialog open={handoffOpen} onOpenChange={setHandoffOpen}>
                 <DialogContent className="max-w-2xl p-0 border-none bg-transparent shadow-none">
+                  <div className="sr-only">
+                    <DialogTitle>Vardiya Teslimi</DialogTitle>
+                    <DialogDescription>Vardiya teslim detaylarını ve kontrol listesini buradan yönetebilirsiniz.</DialogDescription>
+                  </div>
                   {currentRecord && (
                     <ShiftHandoff
                       currentRecord={currentRecord}

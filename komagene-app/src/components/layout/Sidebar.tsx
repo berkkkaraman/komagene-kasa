@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PinPad } from "@/components/auth/PinPad";
 import { LayoutDashboard, BarChart3, Settings, Menu, Shield, Lock } from "lucide-react";
 import { useState } from "react";
@@ -95,6 +95,10 @@ function SidebarContent({ pathname, setOpen }: { pathname: string; setOpen?: (va
 
             <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
                 <DialogContent className="sm:max-w-xs border-none bg-transparent shadow-none p-0">
+                    <div className="sr-only">
+                        <DialogTitle>Yönetici Girişi</DialogTitle>
+                        <DialogDescription>PIN kodunuzu girerek yönetici paneline erişebilirsiniz.</DialogDescription>
+                    </div>
                     <PinPad
                         correctPin="1234"
                         onSuccess={() => {
