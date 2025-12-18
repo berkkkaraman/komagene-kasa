@@ -162,8 +162,8 @@ export default function Dashboard() {
       {/* Header & Date Picker */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-primary">Kasa Paneli</h2>
-          <p className="text-muted-foreground">Günlük ciro ve gider yönetimi</p>
+          <h2 className="text-3xl font-extrabold tracking-tight text-primary">Kasa Paneli</h2>
+          <p className="text-sm font-bold text-foreground/60 uppercase tracking-wide">Günlük ciro ve gider yönetimi</p>
         </div>
 
         <Popover>
@@ -208,8 +208,8 @@ export default function Dashboard() {
             <TabsContent value="income" className="mt-4 outline-none">
               <Card className="glass-card border-none">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold tracking-tight">Günlük Gelir</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-xl font-extrabold tracking-tight">Günlük Gelir</CardTitle>
+                  <CardDescription className="font-medium text-foreground/60">
                     {format(date, "d MMMM yyyy", { locale: tr })} tarihli kasa sayımı
                   </CardDescription>
                 </CardHeader>
@@ -226,8 +226,8 @@ export default function Dashboard() {
             <TabsContent value="expense" className="mt-4 outline-none">
               <Card className="glass-card border-none">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold tracking-tight">Harcama & Gider</CardTitle>
-                  <CardDescription>Fiş/Fatura girişi yapın</CardDescription>
+                  <CardTitle className="text-xl font-extrabold tracking-tight">Harcama & Gider</CardTitle>
+                  <CardDescription className="font-medium text-foreground/60">Fiş/Fatura girişi yapın</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ExpenseForm onAdd={handleExpenseAdd} />
@@ -248,8 +248,8 @@ export default function Dashboard() {
             <TabsContent value="ledger" className="mt-4 outline-none">
               <Card className="glass-card border-none">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold tracking-tight">Veresiye Defteri</CardTitle>
-                  <CardDescription>Müşteri borçlarını ve tahsilatları yönetin</CardDescription>
+                  <CardTitle className="text-xl font-extrabold tracking-tight">Veresiye Defteri</CardTitle>
+                  <CardDescription className="font-medium text-foreground/60">Müşteri borçlarını ve tahsilatları yönetin</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <LedgerList onPaymentProcessed={handleVeresiyePayment} />

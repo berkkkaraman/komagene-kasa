@@ -66,7 +66,7 @@ function SidebarContent({ pathname, setOpen }: { pathname: string; setOpen?: (va
                 <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
                     <span className="text-3xl">🥙</span> KOMAGENE
                 </h1>
-                <p className="text-xs text-muted-foreground mt-1">Büyükdere Şubesi</p>
+                <p className="text-xs font-bold text-foreground/60 mt-1 uppercase tracking-wider">Büyükdere Şubesi</p>
             </div>
 
             <nav className="flex-1 p-4 space-y-2">
@@ -76,15 +76,15 @@ function SidebarContent({ pathname, setOpen }: { pathname: string; setOpen?: (va
                         href={item.href}
                         onClick={close}
                         className={cn(
-                            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group",
+                            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 group",
                             pathname === item.href
                                 ? "nav-link-active"
-                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                : "text-foreground/70 hover:bg-accent hover:text-foreground"
                         )}
                     >
                         <item.icon className={cn(
                             "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
-                            pathname === item.href ? "text-primary" : "text-muted-foreground"
+                            pathname === item.href ? "text-primary stroke-[2.5px]" : "text-foreground/60"
                         )} />
                         <span className="flex-1">{item.label}</span>
                     </Link>

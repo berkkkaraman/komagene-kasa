@@ -38,11 +38,11 @@ export function StatsCards({ income, expense }: StatsCardsProps) {
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-                <Card className="glass-card overflow-hidden group">
+                <Card className="glass-card shadow-sm border border-border group">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-emerald-600 transition-colors">Toplam Gelir</CardTitle>
-                        <div className="p-2 bg-emerald-500/10 rounded-xl group-hover:scale-110 transition-transform">
-                            <ArrowUpIcon className="h-5 w-5 text-emerald-600" />
+                        <CardTitle className="text-sm font-bold text-foreground/70 group-hover:text-emerald-700 transition-colors">Toplam Gelir</CardTitle>
+                        <div className="p-2 bg-emerald-600/10 rounded-xl group-hover:scale-110 transition-transform">
+                            <ArrowUpIcon className="h-5 w-5 text-emerald-700" />
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -55,11 +55,11 @@ export function StatsCards({ income, expense }: StatsCardsProps) {
                     </CardContent>
                 </Card>
 
-                <Card className="glass-card overflow-hidden group">
+                <Card className="glass-card shadow-sm border border-border group">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-red-600 transition-colors">Toplam Gider</CardTitle>
-                        <div className="p-2 bg-red-500/10 rounded-xl group-hover:scale-110 transition-transform">
-                            <ArrowDownIcon className="h-5 w-5 text-red-600" />
+                        <CardTitle className="text-sm font-bold text-foreground/70 group-hover:text-red-700 transition-colors">Toplam Gider</CardTitle>
+                        <div className="p-2 bg-red-600/10 rounded-xl group-hover:scale-110 transition-transform">
+                            <ArrowDownIcon className="h-5 w-5 text-red-700" />
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -73,16 +73,16 @@ export function StatsCards({ income, expense }: StatsCardsProps) {
                 </Card>
 
                 <Card className={cn(
-                    "glass-card overflow-hidden group border-2",
-                    net < 0 ? "border-red-200/50 bg-red-50/10" : "border-emerald-200/50 bg-emerald-50/10"
+                    "glass-card shadow-md border-2 group",
+                    net < 0 ? "border-red-500/30 bg-red-50/20" : "border-emerald-500/30 bg-emerald-50/20"
                 )}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Net Kasa</CardTitle>
+                        <CardTitle className="text-sm font-bold text-foreground/80">Net Kasa Durumu</CardTitle>
                         <div className={cn(
                             "p-2 rounded-xl group-hover:scale-110 transition-transform",
-                            net < 0 ? "bg-red-500/20" : "bg-emerald-500/20"
+                            net < 0 ? "bg-red-600/20" : "bg-emerald-600/20"
                         )}>
-                            <Wallet className={cn("h-5 w-5", net < 0 ? "text-red-600" : "text-emerald-600")} />
+                            <Wallet className={cn("h-5 w-5", net < 0 ? "text-red-700" : "text-emerald-700")} />
                         </div>
                     </CardHeader>
                     <CardContent>
