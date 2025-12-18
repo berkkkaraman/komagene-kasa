@@ -117,7 +117,6 @@ export function ShiftHandoff({ currentRecord, onComplete }: ShiftHandoffProps) {
                                 )}>
                                     {item.label}
                                 </span>
-                                {item.completed && <CheckCircle2 className="h-4 w-4 text-emerald-500 animate-in zoom-in" />}
                             </div>
                         ))}
                     </div>
