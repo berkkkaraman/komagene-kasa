@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { PinPad } from "@/components/auth/PinPad";
-import { LayoutDashboard, BarChart3, Settings, Menu, Shield, Lock } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { LayoutDashboard, BarChart3, Settings, Menu, Shield, Lock, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -54,19 +54,22 @@ export function Sidebar() {
 function SidebarContent({ pathname, setOpen }: { pathname: string; setOpen?: (val: boolean) => void }) {
     const close = () => setOpen?.(false);
     const router = useRouter();
-    const [loginOpen, setLoginOpen] = useState(false);
+    const { user, signOut, loading } = useAuth();
 
-    const handleAdminClick = () => {
-        setLoginOpen(true);
+    const handleLogout = async () => {
+        await signOut();
+        toast.success("Oturum kapatıldı");
+        router.push("/");
+        close();
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-white dark:bg-card">
             <div className="p-6 border-b">
                 <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-                    <span className="text-3xl">🥙</span> KOMAGENE
+                    <span className="text-3xl">🥗</span> KOMAGENE
                 </h1>
-                <p className="text-xs font-bold text-foreground/60 mt-1 uppercase tracking-wider">Büyükdere Şubesi</p>
+                <p className="text-xs font-bold text-foreground/60 mt-1 uppercase tracking-wider">Merkezi Yönetim</p>
             </div>
 
             <nav className="flex-1 p-4 space-y-2">
@@ -89,34 +92,61 @@ function SidebarContent({ pathname, setOpen }: { pathname: string; setOpen?: (va
                         <span className="flex-1">{item.label}</span>
                     </Link>
                 ))}
+
+                {user && (
+                    <Link
+                        href="/admin"
+                        onClick={close}
+                        className={cn(
+                            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 group",
+                            pathname === "/admin"
+                                ? "nav-link-active"
+                                : "text-foreground/70 hover:bg-accent hover:text-foreground"
+                        )}
+                    >
+                        <Settings className={cn(
+                            "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
+                            pathname === "/admin" ? "text-primary stroke-[2.5px]" : "text-foreground/60"
+                        )} />
+                        <span className="flex-1">Yönetici Paneli</span>
+                    </Link>
+                )}
             </nav>
 
-            <div className="p-4 border-t mt-auto">
-                <Button variant="outline" className="w-full gap-2 text-muted-foreground border-dashed" onClick={handleAdminClick}>
-                    <Shield className="h-4 w-4" />
-                    Yönetici Girişi
-                </Button>
-            </div>
-
-            <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
-                <DialogContent className="sm:max-w-xs border-none bg-transparent shadow-none p-0">
-                    <div className="sr-only">
-                        <DialogTitle>Yönetici Girişi</DialogTitle>
-                        <DialogDescription>PIN kodunuzu girerek yönetici paneline erişebilirsiniz.</DialogDescription>
+            <div className="p-4 border-t mt-auto space-y-3">
+                {loading ? (
+                    <div className="flex justify-center p-2">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary/50" />
                     </div>
-                    <PinPad
-                        correctPin="1234"
-                        onSuccess={() => {
-                            sessionStorage.setItem("admin_auth", "true");
-                            toast.success("Giriş yapıldı");
-                            setLoginOpen(false);
+                ) : user ? (
+                    <div className="space-y-3">
+                        <div className="px-4 py-2 bg-accent/30 rounded-xl">
+                            <p className="text-[10px] font-bold text-foreground/40 uppercase tracking-tighter">Aktif Kullanıcı</p>
+                            <p className="text-xs font-bold text-foreground/80 truncate">{user.email}</p>
+                        </div>
+                        <Button
+                            variant="outline"
+                            className="w-full gap-2 text-primary border-primary/20 hover:bg-primary/5 rounded-xl h-11"
+                            onClick={handleLogout}
+                        >
+                            <Lock className="h-4 w-4" />
+                            Güvenli Çıkış
+                        </Button>
+                    </div>
+                ) : (
+                    <Button
+                        variant="default"
+                        className="w-full gap-2 rounded-xl h-11 font-bold shadow-lg shadow-primary/10"
+                        onClick={() => {
+                            router.push("/login");
                             close();
-                            router.push("/admin");
                         }}
-                        onCancel={() => setLoginOpen(false)}
-                    />
-                </DialogContent>
-            </Dialog>
+                    >
+                        <Shield className="h-4 w-4" />
+                        Yönetici Girişi
+                    </Button>
+                )}
+            </div>
         </div>
     );
 }

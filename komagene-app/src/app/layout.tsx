@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: "Günlük ciro ve gider takip sistemi",
 };
 
+import { AuthProvider } from "@/components/auth/AuthProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,13 +28,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen bg-background flex flex-col md:flex-row">
-            <Sidebar />
-            <main className="flex-1 overflow-x-hidden">
-              {children}
-            </main>
-          </div>
-          <Toaster />
+          <AuthProvider>
+            <div className="min-h-screen bg-background flex flex-col md:flex-row">
+              <Sidebar />
+              <main className="flex-1 overflow-x-hidden">
+                {children}
+              </main>
+            </div>
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

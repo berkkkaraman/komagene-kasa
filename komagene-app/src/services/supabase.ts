@@ -6,12 +6,17 @@ const isUUID = (str: string) => {
     return uuidRegex.test(str);
 };
 
+// Phase 8: Default Branch ID for the current user
+// This will later be fetched from supabase.auth.getSession()
+const DEFAULT_BRANCH = '00000000-0000-0000-0000-000000000000';
+
 export const SupabaseService = {
     // Daily Records
     getRecords: async (): Promise<DailyRecord[]> => {
         const { data, error } = await supabase
             .from('records')
             .select('*')
+            .eq('branch_id', DEFAULT_BRANCH)
             .order('date', { ascending: false });
 
         if (error) {
@@ -31,7 +36,8 @@ export const SupabaseService = {
             cashCount: row.cash_count,
             reconciliationDiff: row.reconciliation_diff,
             inventory: row.inventory,
-            shiftReport: row.shift_report
+            shiftReport: row.shift_report,
+            branch_id: row.branch_id
         }));
     },
 
@@ -50,8 +56,9 @@ export const SupabaseService = {
                 cash_count: record.cashCount,
                 reconciliation_diff: record.reconciliationDiff,
                 inventory: record.inventory,
-                shift_report: record.shiftReport
-            }, { onConflict: 'date' });
+                shift_report: record.shiftReport,
+                branch_id: DEFAULT_BRANCH
+            }, { onConflict: 'date, branch_id' });
 
         return { error };
     },
@@ -61,6 +68,7 @@ export const SupabaseService = {
         const { data, error } = await supabase
             .from('ledger')
             .select('*')
+            .eq('branch_id', DEFAULT_BRANCH)
             .order('date', { ascending: false });
 
         if (error) {
@@ -74,7 +82,8 @@ export const SupabaseService = {
             amount: row.amount,
             date: row.date,
             isPaid: row.is_paid,
-            paidAt: row.paid_at
+            paidAt: row.paid_at,
+            branch_id: row.branch_id
         }));
     },
 
@@ -88,7 +97,8 @@ export const SupabaseService = {
                 amount: item.amount,
                 date: item.date,
                 is_paid: item.isPaid,
-                paid_at: item.paidAt
+                paid_at: item.paidAt,
+                branch_id: DEFAULT_BRANCH
             });
 
         return { error };

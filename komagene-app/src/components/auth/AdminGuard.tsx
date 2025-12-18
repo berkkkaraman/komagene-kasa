@@ -1,35 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "./AuthProvider";
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
-    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+    const { user, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        // We use sessionStorage so it clears when the tab is closed
-        const auth = sessionStorage.getItem("admin_auth");
-        if (auth === "true") {
-            setIsAuthorized(true);
-        } else {
-            setIsAuthorized(false);
-            router.push("/");
+        if (!loading && !user) {
+            router.push("/login");
         }
-    }, [router]);
+    }, [user, loading, router]);
 
-    if (isAuthorized === null) {
+    if (loading) {
         return (
             <div className="h-screen w-full flex flex-col items-center justify-center gap-4">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground animate-pulse">Güvenlik kontrolü yapılıyor...</p>
+                <p className="text-sm font-bold text-foreground/60 uppercase tracking-widest animate-pulse">
+                    Oturum Kontrol Ediliyor...
+                </p>
             </div>
         );
     }
 
-    if (!isAuthorized) {
-        return null; // Will redirect via useEffect
+    if (!user) {
+        return null;
     }
 
     return <>{children}</>;

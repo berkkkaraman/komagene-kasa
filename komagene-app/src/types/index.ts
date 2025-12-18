@@ -41,6 +41,7 @@ export interface DailyRecord {
     reconciliationDiff?: number; // Difference (Count - System)
     inventory?: InventoryItem[]; // Stock status
     shiftReport?: ShiftReport; // Closing checklist and notes
+    branch_id?: string; // Phase 8: SaaS Multi-tenancy
 }
 
 export type InventoryStatus = 'ok' | 'low' | 'out';
@@ -69,6 +70,7 @@ export interface LedgerItem {
     date: string;
     isPaid: boolean;
     paidAt?: string;
+    branch_id?: string; // Phase 8: SaaS Multi-tenancy
 }
 
 // Legacy Type for Migration
