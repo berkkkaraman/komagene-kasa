@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOMAGENE (Büyükdere) - Günlük Kasa</title>
+    <meta name="description" content="KOMAGENE Büyükdere şubesi için günlük gelir-gider takip sistemi">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="logo.png" alt="Komagene Logo" class="logo-img">
+                <div class="logo-text-container">
+                    <span class="logo-text">KOMAGENE</span>
+                    <span class="logo-subtext">Büyükdere Şubesi</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-item active" data-page="dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    <span>Günlük Kasa</span>
+                </div>
+                <div class="nav-item" data-page="reports">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.21 15.89A10 10 0 118 2.83" />
+                        <path d="M22 12A10 10 0 0012 2v10z" />
+                    </svg>
+                    <span>Raporlar</span>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="branch-info">
+                    <div class="branch-icon">K</div>
+                    <div class="branch-details">
+                        <span class="branch-name">Komagene</span>
+                        <span class="branch-location">Büyükdere</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- DASHBOARD PAGE -->
+            <div id="page-dashboard" class="page active">
+                <header class="header">
+                    <div class="header-left">
+                        <h1 class="page-title">Günlük Kasa</h1>
+                        <p class="page-subtitle">Günlük gelir ve giderlerinizi takip edin</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="save-status" id="saveStatus"><span
+                                class="save-status-dot"></span><span>Kaydedildi</span></div>
+                        <button class="btn btn-secondary btn-sm" id="backupBtn"><svg width="14" height="14"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>Yedekle</button>
+                        <button class="btn btn-secondary btn-sm" id="restoreBtn"><svg width="14" height="14"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>Geri Yükle</button>
+                        <input type="file" id="restoreInput" accept=".json" style="display:none">
+                        <button class="btn btn-secondary" id="exportBtn"><svg width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>CSV İndir</button>
+                    </div>
+                </header>
+
+                <!-- Summary Cards -->
+                <section class="summary-cards">
+                    <div class="summary-card income">
+                        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M18 15l-6-6-6 6" />
+                            </svg></div>
+                        <div class="card-content"><span class="card-label">Toplam Gelir</span><span class="card-value"
+                                id="totalIncome">₺0,00</span></div>
+                        <div class="card-trend"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M18 15l-6-6-6 6" />
+                            </svg></div>
+                    </div>
+                    <div class="summary-card expense">
+                        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg></div>
+                        <div class="card-content"><span class="card-label">Toplam Gider</span><span class="card-value"
+                                id="totalExpense">₺0,00</span></div>
+                        <div class="card-trend"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg></div>
+                    </div>
+                    <div class="summary-card profit" id="profitCard">
+                        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                            </svg></div>
+                        <div class="card-content"><span class="card-label">Net Kar/Zarar</span><span class="card-value"
+                                id="totalProfit">₺0,00</span></div>
+                        <div class="card-trend" id="profitTrend"><svg width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 15l-6-6-6 6" />
+                            </svg></div>
+                    </div>
+                </section>
+
+                <!-- Mini Stats -->
+                <section class="mini-stats">
+                    <div class="mini-stat"><span class="mini-stat-label">Günlük Ort. Gelir</span><span
+                            class="mini-stat-value positive" id="avgDailyIncome">₺0</span></div>
+                    <div class="mini-stat"><span class="mini-stat-label">Günlük Ort. Gider</span><span
+                            class="mini-stat-value negative" id="avgDailyExpense">₺0</span></div>
+                    <div class="mini-stat"><span class="mini-stat-label">Günlük Ort. Kar</span><span
+                            class="mini-stat-value" id="avgDailyProfit">₺0</span></div>
+                    <div class="mini-stat"><span class="mini-stat-label">En İyi Gün</span><span
+                            class="mini-stat-value positive" id="bestDay">-</span></div>
+                    <div class="mini-stat"><span class="mini-stat-label">En Kötü Gün</span><span
+                            class="mini-stat-value negative" id="worstDay">-</span></div>
+                    <div class="mini-stat"><span class="mini-stat-label">İşaretli Günler</span><span
+                            class="mini-stat-value" id="markedCount">0 gün</span></div>
+                </section>
+
+                <!-- Filters -->
+                <section class="filters-bar">
+                    <div class="search-box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input type="text" id="searchInput" class="filter-input" placeholder="Ara (tarih, not...)">
+                    </div>
+                    <input type="date" id="filterStartDate" class="filter-input" title="Başlangıç tarihi">
+                    <input type="date" id="filterEndDate" class="filter-input" title="Bitiş tarihi">
+                    <select id="sortSelect" class="filter-select">
+                        <option value="date-asc">Tarih (Eskiden Yeniye)</option>
+                        <option value="date-desc">Tarih (Yeniden Eskiye)</option>
+                        <option value="income-desc">En Yüksek Gelir</option>
+                        <option value="expense-desc">En Yüksek Gider</option>
+                        <option value="profit-desc">En Yüksek Kar</option>
+                        <option value="profit-asc">En Düşük Kar</option>
+                    </select>
+                    <button class="btn btn-secondary btn-sm" id="clearFilters">Temizle</button>
+                </section>
+
+                <!-- Day Picker -->
+                <section class="day-picker">
+                    <label>📅 Gün Seç:</label>
+                    <input type="date" id="dayPicker">
+                    <button class="btn btn-secondary btn-sm" id="goToDay">Günü Göster</button>
+                    <div class="print-actions">
+                        <button class="btn btn-secondary btn-sm" id="printDaily">📄 Günlük</button>
+                        <button class="btn btn-secondary btn-sm" id="printWeekly">📅 Haftalık</button>
+                        <button class="btn btn-secondary btn-sm" id="printMonthly">📆 Aylık</button>
+                    </div>
+                </section>
+
+                <!-- Ledger Table -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Günlük Kayıtlar</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="ledger-table" id="ledgerTable">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width:40px;">⭐</th>
+                                    <th rowspan="2" class="date-col">Tarih</th>
+                                    <th colspan="4" class="income-header">GELİRLER</th>
+                                    <th colspan="6" class="expense-header">GİDERLER</th>
+                                    <th rowspan="2" class="net-col">NET KAR</th>
+                                    <th rowspan="2" class="note-col">NOT</th>
+                                    <th rowspan="2">SİL</th>
+                                </tr>
+                                <tr>
+                                    <th class="income-sub">POS</th>
+                                    <th class="income-sub">Nakit</th>
+                                    <th class="income-sub">Online</th>
+                                    <th class="income-sub total">TOPLAM</th>
+                                    <th class="expense-sub">Personel</th>
+                                    <th class="expense-sub">Kira/Fatura</th>
+                                    <th class="expense-sub">Malzeme</th>
+                                    <th class="expense-sub">Vergi</th>
+                                    <th class="expense-sub">Diğer</th>
+                                    <th class="expense-sub total">TOPLAM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerBody"></tbody>
+                        </table>
+                    </div>
+                    <!-- Table Footer with Add Button -->
+                    <div class="table-footer">
+                        <button class="btn btn-primary" id="addNewDay"><svg width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>Yeni Gün Ekle</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- REPORTS PAGE -->
+            <div id="page-reports" class="page">
+                <header class="header">
+                    <div class="header-left">
+                        <h1 class="page-title">Raporlar</h1>
+                        <p class="page-subtitle">Detaylı finansal analiz ve özet raporları</p>
+                    </div>
+                    <div class="header-actions">
+                        <select id="reportPeriod" class="filter-select">
+                            <option value="7">Son 7 Gün</option>
+                            <option value="14">Son 14 Gün</option>
+                            <option value="30">Son 30 Gün</option>
+                            <option value="all">Tüm Zamanlar</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="window.print()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 6 2 18 2 18 9" />
+                                <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+                                <rect x="6" y="14" width="12" height="8" />
+                            </svg>
+                            Rapor Yazdır
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Period Info -->
+                <div class="period-info" id="periodInfo">
+                    <span>📅 Seçili dönem: <strong id="periodText">Son 7 Gün</strong></span>
+                    <span>📊 Toplam <strong id="periodDays">0</strong> gün verisi</span>
+                </div>
+
+                <!-- Main Stats -->
+                <section class="summary-cards">
+                    <div class="summary-card income">
+                        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M18 15l-6-6-6 6" />
+                            </svg></div>
+                        <div class="card-content">
+                            <span class="card-label">Toplam Gelir</span>
+                            <span class="card-value" id="reportIncome">₺0,00</span>
+                            <span class="card-sub" id="reportIncomeAvg">Günlük ort: ₺0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card expense">
+                        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg></div>
+                        <div class="card-content">
+                            <span class="card-label">Toplam Gider</span>
+                            <span class="card-value" id="reportExpense">₺0,00</span>
+                            <span class="card-sub" id="reportExpenseAvg">Günlük ort: ₺0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card profit" id="reportProfitCard">
+                        <div class="card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                            </svg></div>
+                        <div class="card-content">
+                            <span class="card-label">Net Kar/Zarar</span>
+                            <span class="card-value" id="reportProfit">₺0,00</span>
+                            <span class="card-sub" id="reportProfitMargin">Kar marjı: %0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card stat">
+                        <div class="card-icon" style="background:rgba(99,102,241,0.15);color:#a5b4fc;"><svg width="24"
+                                height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20V10M18 20V4M6 20v-4" />
+                            </svg></div>
+                        <div class="card-content">
+                            <span class="card-label">Kar Marjı</span>
+                            <span class="card-value" id="reportMarginPercent">%0</span>
+                            <span class="card-sub" id="reportMarginTrend">-</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Key Metrics -->
+                <section class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon positive">📈</div>
+                        <div class="metric-content">
+                            <span class="metric-label">En İyi Gün</span>
+                            <span class="metric-value" id="reportBestDay">-</span>
+                            <span class="metric-sub" id="reportBestDayValue">₺0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon negative">📉</div>
+                        <div class="metric-content">
+                            <span class="metric-label">En Kötü Gün</span>
+                            <span class="metric-value" id="reportWorstDay">-</span>
+                            <span class="metric-sub" id="reportWorstDayValue">₺0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">💰</div>
+                        <div class="metric-content">
+                            <span class="metric-label">En Yüksek Gelir</span>
+                            <span class="metric-value" id="reportMaxIncome">-</span>
+                            <span class="metric-sub" id="reportMaxIncomeValue">₺0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">💸</div>
+                        <div class="metric-content">
+                            <span class="metric-label">En Yüksek Gider</span>
+                            <span class="metric-value" id="reportMaxExpense">-</span>
+                            <span class="metric-sub" id="reportMaxExpenseValue">₺0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⭐</div>
+                        <div class="metric-content">
+                            <span class="metric-label">Kârlı Gün Sayısı</span>
+                            <span class="metric-value" id="reportProfitDays">0</span>
+                            <span class="metric-sub" id="reportProfitDaysPercent">%0 başarı</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">📋</div>
+                        <div class="metric-content">
+                            <span class="metric-label">İşaretli Günler</span>
+                            <span class="metric-value" id="reportMarkedDays">0</span>
+                            <span class="metric-sub">Önemli gün</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Charts Section -->
+                <section class="reports-grid">
+                    <div class="report-card full-width">
+                        <div class="report-card-header">
+                            <h3>📊 Günlük Performans Grafiği</h3>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="legend-color income"></span>Gelir</span>
+                                <span class="legend-item"><span class="legend-color expense"></span>Gider</span>
+                                <span class="legend-item"><span class="legend-color profit"></span>Kar</span>
+                            </div>
+                        </div>
+                        <div class="chart-container-large" id="dailyChart"></div>
+                    </div>
+                </section>
+
+                <!-- Breakdown Section -->
+                <section class="reports-grid two-col">
+                    <div class="report-card">
+                        <div class="report-card-header">
+                            <h3>💵 Gelir Dağılımı</h3>
+                            <span class="report-total" id="incomeTotalLabel">Toplam: ₺0</span>
+                        </div>
+                        <div class="breakdown-list" id="incomeBreakdown"></div>
+                        <div class="breakdown-chart" id="incomeChart"></div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-card-header">
+                            <h3>💳 Gider Dağılımı</h3>
+                            <span class="report-total" id="expenseTotalLabel">Toplam: ₺0</span>
+                        </div>
+                        <div class="breakdown-list" id="expenseBreakdown"></div>
+                        <div class="breakdown-chart" id="expenseChart"></div>
+                    </div>
+                </section>
+
+                <!-- Daily Details Table -->
+                <section class="report-card">
+                    <div class="report-card-header">
+                        <h3>📅 Günlük Detaylar</h3>
+                        <span class="report-total" id="detailsCount">0 kayıt</span>
+                    </div>
+                    <div class="table-container">
+                        <table class="details-table" id="reportDetailsTable">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Gelir</th>
+                                    <th>Gider</th>
+                                    <th>Net Kar</th>
+                                    <th>Kar %</th>
+                                    <th>Not</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportDetailsBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
