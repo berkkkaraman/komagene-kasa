@@ -1,6 +1,11 @@
 import { supabase } from '@/lib/supabase';
 import { DailyRecord, LedgerItem } from '@/types';
 
+const isUUID = (str: string) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+};
+
 export const SupabaseService = {
     // Daily Records
     getRecords: async (): Promise<DailyRecord[]> => {
@@ -31,10 +36,11 @@ export const SupabaseService = {
     },
 
     saveRecord: async (record: DailyRecord) => {
+        const sanitizedId = isUUID(record.id) ? record.id : crypto.randomUUID();
         const { error } = await supabase
             .from('records')
             .upsert({
-                id: record.id,
+                id: sanitizedId,
                 date: record.date,
                 income: record.income,
                 expenses: record.expenses,
@@ -73,10 +79,11 @@ export const SupabaseService = {
     },
 
     saveLedgerItem: async (item: LedgerItem) => {
+        const sanitizedId = isUUID(item.id) ? item.id : crypto.randomUUID();
         const { error } = await supabase
             .from('ledger')
             .upsert({
-                id: item.id,
+                id: sanitizedId,
                 customer_name: item.customerName,
                 amount: item.amount,
                 date: item.date,
