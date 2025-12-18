@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { StorageService } from "@/services/storage";
 import { AdminGuard } from "@/components/auth/AdminGuard";
+import { SyncManager } from "@/components/admin/SyncManager";
 import { Download, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -54,6 +55,11 @@ function AdminPageContent() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
+                {/* Cloud Sync Section */}
+                <div className="md:col-span-2">
+                    <SyncManager />
+                </div>
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Veri Yedekleme</CardTitle>

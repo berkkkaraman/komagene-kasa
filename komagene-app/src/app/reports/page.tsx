@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { StorageService } from "@/services/storage";
+import { SupabaseService } from "@/services/supabase";
 import { DailyRecord } from "@/types";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,10 +18,27 @@ const COLORS = ['#10b981', '#3b82f6', '#f97316', '#a855f7']; // Green, Blue, Ora
 export default function ReportsPage() {
     const [records, setRecords] = useState<DailyRecord[]>([]);
     const [mounted, setMounted] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setMounted(true);
-        setRecords(StorageService.getRecords());
+        const loadRecords = async () => {
+            try {
+                const cloudData = await SupabaseService.getRecords();
+                if (cloudData.length > 0) {
+                    setRecords(cloudData);
+                    StorageService.saveRecords(cloudData);
+                } else {
+                    setRecords(StorageService.getRecords());
+                }
+            } catch (error) {
+                console.error("Reports cloud fetch failed:", error);
+                setRecords(StorageService.getRecords());
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadRecords();
     }, []);
 
     if (!mounted) return null;

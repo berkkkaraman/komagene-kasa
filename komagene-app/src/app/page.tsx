@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { DailyRecord, DailyIncome, ExpenseItem } from "@/types";
 import { StorageService } from "@/services/storage";
+import { SupabaseService } from "@/services/supabase";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { IncomeForm } from "@/components/dashboard/IncomeForm";
 import { ExpenseForm } from "@/components/dashboard/ExpenseForm";
@@ -28,13 +29,31 @@ export default function Dashboard() {
   const [date, setDate] = useState<Date>(new Date());
   const [records, setRecords] = useState<DailyRecord[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [reconcileOpen, setReconcileOpen] = useState(false);
   const [handoffOpen, setHandoffOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const data = StorageService.getRecords();
-    setRecords(data);
+    const loadData = async () => {
+      try {
+        const cloudData = await SupabaseService.getRecords();
+        if (cloudData.length > 0) {
+          setRecords(cloudData);
+          StorageService.saveRecords(cloudData); // Sync cloud to local
+        } else {
+          const localData = StorageService.getRecords();
+          setRecords(localData);
+        }
+      } catch (error) {
+        console.error("Cloud fetch failed, using local backup:", error);
+        const localData = StorageService.getRecords();
+        setRecords(localData);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
   }, []);
 
   if (!mounted) return null;
@@ -69,7 +88,7 @@ export default function Dashboard() {
   const totalExpense = calculateExpense(currentRecord.expenses);
 
   // Handlers
-  const saveRecord = (updatedRecord: DailyRecord) => {
+  const saveRecord = async (updatedRecord: DailyRecord) => {
     // Check if exists
     const existingIndex = records.findIndex(r => r.date === updatedRecord.date);
     let newRecords = [...records];
@@ -79,7 +98,15 @@ export default function Dashboard() {
       newRecords.push(updatedRecord);
     }
     setRecords(newRecords);
+
+    // Save to both for reliability
     StorageService.saveRecords(newRecords);
+    try {
+      await SupabaseService.saveRecord(updatedRecord);
+    } catch (error) {
+      console.error("Buluta kaydedilemedi:", error);
+      toast.error("İnternet bağlantısı sorunu: Veri sadece yerel olarak kaydedildi.");
+    }
   };
 
   const handleIncomeSave = (data: DailyIncome, image?: string) => {

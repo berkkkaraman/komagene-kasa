@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { SupabaseService } from "@/services/supabase";
 
 interface LedgerListProps {
     onPaymentProcessed: (amount: number) => void;
@@ -22,19 +23,36 @@ export function LedgerList({ onPaymentProcessed }: LedgerListProps) {
     const [name, setName] = useState("");
     const [amount, setAmount] = useState("");
     const [showHistory, setShowHistory] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setItems(StorageService.getLedger());
+        const loadLedger = async () => {
+            try {
+                const cloudLedger = await SupabaseService.getLedger();
+                if (cloudLedger.length > 0) {
+                    setItems(cloudLedger);
+                    StorageService.saveLedger(cloudLedger);
+                } else {
+                    setItems(StorageService.getLedger());
+                }
+            } catch (error) {
+                console.error("Ledger cloud fetch failed:", error);
+                setItems(StorageService.getLedger());
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadLedger();
     }, []);
 
-    const handleAdd = () => {
+    const handleAdd = async () => {
         if (!name || !amount) {
             toast.error("Lütfen isim ve tutar girin");
             return;
         }
 
         const newItem: LedgerItem = {
-            id: Math.random().toString(36).substr(2, 9),
+            id: crypto.randomUUID(),
             customerName: name,
             amount: parseFloat(amount),
             date: new Date().toISOString(),
@@ -44,30 +62,52 @@ export function LedgerList({ onPaymentProcessed }: LedgerListProps) {
         const updated = [...items, newItem];
         setItems(updated);
         StorageService.saveLedger(updated);
+
+        try {
+            await SupabaseService.saveLedgerItem(newItem);
+            toast.success("Veresiye buluta kaydedildi");
+        } catch (error) {
+            console.error("Ledger save failed:", error);
+            toast.error("Buluta kaydedilemedi, yerel kayıt yapıldı.");
+        }
+
         setName("");
         setAmount("");
-        toast.success("Veresiye eklendi");
     };
 
-    const handlePay = (id: string) => {
+    const handlePay = async (id: string) => {
         const item = items.find(i => i.id === id);
         if (!item) return;
 
-        const updated = items.map(i =>
-            i.id === id ? { ...i, isPaid: true, paidAt: new Date().toISOString() } : i
-        );
+        const updatedItem = { ...item, isPaid: true, paidAt: new Date().toISOString() };
+        const updatedItems = items.map(i => i.id === id ? updatedItem : i);
 
-        setItems(updated);
-        StorageService.saveLedger(updated);
-        onPaymentProcessed(item.amount);
-        toast.success(`${item.customerName} ödemesi alındı ve kasaya eklendi`);
+        setItems(updatedItems);
+        StorageService.saveLedger(updatedItems);
+
+        try {
+            await SupabaseService.saveLedgerItem(updatedItem);
+            onPaymentProcessed(item.amount);
+            toast.success(`${item.customerName} ödemesi alındı ve buluta işlendi`);
+        } catch (error) {
+            console.error("Ledger pay update failed:", error);
+            onPaymentProcessed(item.amount);
+            toast.warning("Ödeme sadece yerel olarak işlendi (Bulut hatası)");
+        }
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         const updated = items.filter(i => i.id !== id);
         setItems(updated);
         StorageService.saveLedger(updated);
-        toast.info("Kayıt silindi");
+
+        try {
+            await SupabaseService.deleteLedgerItem(id);
+            toast.info("Kayıt buluttan silindi");
+        } catch (error) {
+            console.error("Ledger delete failed:", error);
+            toast.info("Kayıt sadece yerelden silindi");
+        }
     };
 
     const activeDebts = items.filter(i => !i.isPaid);
