@@ -8,6 +8,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { NotificationProvider } from "@/components/NotificationProvider";
 import { CommandPalette } from "@/components/CommandPalette";
+import { RealtimeManager } from "@/components/RealtimeManager";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -38,6 +40,8 @@ export default function RootLayout({
         >
           <AuthProvider>
             <div className="min-h-screen bg-background relative flex flex-col bg-[radial-gradient(circle_at_20%_20%,_var(--tw-gradient-stops))] from-primary/5 via-background to-background">
+              <ServiceWorkerRegister />
+              <RealtimeManager />
               {/* Header */}
               <header className="border-b bg-background/80 backdrop-blur-xl sticky top-0 z-50">
                 <div className="px-4 flex h-14 items-center justify-between">

@@ -1,78 +1,59 @@
-// Günkasa Service Worker for PWA & Push Notifications
-const CACHE_NAME = 'gunkasa-v1';
-const OFFLINE_URL = '/';
+const CACHE_NAME = "gunkasa-v1";
 
-// Install event - cache essential files
-self.addEventListener('install', (event) => {
+const ASSETS_TO_CACHE = [
+    "/",
+    "/manifest.json",
+    "/favicon.ico",
+    "/icon.svg"
+];
+
+// Install Event: Cache core assets
+self.addEventListener("install", (event: any) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll([
-                OFFLINE_URL,
-                '/manifest.json',
-                '/icon.svg'
-            ]);
+            console.log("📦 Service Worker: Caching App Shell");
+            return cache.addAll(ASSETS_TO_CACHE);
         })
     );
-    self.skipWaiting();
+    (self as any).skipWaiting();
 });
 
-// Activate event - clean old caches
-self.addEventListener('activate', (event) => {
+// Activate Event: Cleanup old caches
+self.addEventListener("activate", (event: any) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map((name) => {
-                    if (name !== CACHE_NAME) {
-                        return caches.delete(name);
-                    }
-                })
+                cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
             );
         })
     );
-    self.clients.claim();
 });
 
-// Fetch event - network first, then cache
-self.addEventListener('fetch', (event) => {
-    if (event.request.mode === 'navigate') {
+// Fetch Event: Network First, then Cache
+self.addEventListener("fetch", (event: any) => {
+    // Only handle HTTP/HTTPS protocols
+    if (!event.request.url.startsWith("http")) return;
+
+    // For API calls (Supabase), always go to network (or handle via IndexedDB separate logic)
+    if (event.request.url.includes("supabase")) {
+        return;
+    }
+
+    // For Static Assets (Next.js chunks, images), go Cache First
+    if (event.request.url.includes("_next/static") || event.request.url.includes("icons/")) {
         event.respondWith(
-            fetch(event.request).catch(() => {
-                return caches.match(OFFLINE_URL);
+            caches.match(event.request).then((cachedResponse) => {
+                return cachedResponse || fetch(event.request);
             })
         );
+        return;
     }
-});
 
-// Push notification event
-self.addEventListener('push', (event) => {
-    const data = event.data ? event.data.json() : {};
-    const title = data.title || 'Günkasa Bildirimi';
-    const options = {
-        body: data.body || 'Yeni bir güncelleme var!',
-        icon: '/icon.svg',
-        badge: '/icon.svg',
-        vibrate: [100, 50, 100],
-        data: {
-            url: data.url || '/'
-        },
-        actions: [
-            { action: 'open', title: 'Aç' },
-            { action: 'close', title: 'Kapat' }
-        ]
-    };
-
-    event.waitUntil(
-        self.registration.showNotification(title, options)
+    // For HTML pages, try Network first, fall back to offline page (if we had one)
+    event.respondWith(
+        fetch(event.request)
+            .catch(() => {
+                return caches.match(event.request);
+            })
     );
-});
-
-// Notification click event
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-
-    if (event.action === 'open' || !event.action) {
-        event.waitUntil(
-            clients.openWindow(event.notification.data.url || '/')
-        );
-    }
 });
