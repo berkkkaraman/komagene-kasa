@@ -29,31 +29,33 @@ self.addEventListener("activate", (event) => {
     );
 });
 
-// Fetch Event: Network First, then Cache
+// Fetch Event: Optimized for reliability
 self.addEventListener("fetch", (event) => {
+    // Only handle GET requests
+    if (event.request.method !== 'GET') return;
+
     // Only handle HTTP/HTTPS protocols
     if (!event.request.url.startsWith("http")) return;
 
-    // For API calls (Supabase), always go to network (or handle via IndexedDB separate logic)
-    if (event.request.url.includes("supabase")) {
+    // Bypass for Supabase/API calls to avoid "Failed to convert value to Response"
+    if (event.request.url.includes("supabase.co") || event.request.url.includes("/api/")) {
         return;
     }
 
-    // For Static Assets (Next.js chunks, images), go Cache First
-    if (event.request.url.includes("_next/static") || event.request.url.includes("icons/")) {
-        event.respondWith(
-            caches.match(event.request).then((cachedResponse) => {
-                return cachedResponse || fetch(event.request);
-            })
-        );
-        return;
-    }
-
-    // For HTML pages, try Network first, fall back to offline page (if we had one)
+    // Strategy: Network First, Fallback to Cache
     event.respondWith(
         fetch(event.request)
-            .catch(() => {
-                return caches.match(event.request);
+            .catch(async () => {
+                const cachedResponse = await caches.match(event.request);
+                if (cachedResponse) return cachedResponse;
+
+                // Final fallback: If everything fails, return a simple offline message or blank response
+                // instead of throwing "Failed to convert value to Response"
+                return new Response("Bağlantı yok. Lütfen internetinizi kontrol edin.", {
+                    status: 503,
+                    statusText: "Service Unavailable",
+                    headers: new Headers({ "Content-Type": "text/plain; charset=utf-8" }),
+                });
             })
     );
 });
