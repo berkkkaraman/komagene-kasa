@@ -1,0 +1,22 @@
+[SİSTEM DURUMU VE HATIRLATMA PROMPTU]
+
+Merhaba Antigravity! Bu projeyi devralıyorsun. İşte son durum:
+
+PROJE: Komagene Şube Yönetim Paneli
+TEKNOLOJİLER: Next.js 14, Supabase, Tailwind, Zustand, Vercel Deploy.
+
+TAMAMLANAN ÖZELLİKLER (Kritik):
+1. Global Veresiye Sistemi: Günlükten bağımsız, tüm zamanlar takibi. "ÖDENDİ" butonu geliri o günün kasasına işler.
+2. Excel Export: Arşiv sayfasında filtreli (Gün/Hafta/Ay/Tüm) CSV çıktısı alma.
+3. UI İyileştirmeleri: Yeşil/Kırmızı kar-zarar renkleri, modern ikonlar, premium gece modu.
+4. Deploy: Proje Vercel'de canlıda (`komagene-kasa.vercel.app`).
+
+ÖNEMLİ TEKNİK NOTLAR:
+- Supabase Bağlantısı: Vercel env variable sorunları nedeniyle `src/lib/supabase.ts` içinde credential'lar HARDCODED olarak yazıldı. Sakın değiştirme veya env'den çekmeye çalışma (bozulur).
+- Auth Redirect: Kullanıcı Google ile giriş yapabiliyor. Supabase panelinde Redirect URL `https://komagene-kasa.vercel.app/auth/callback` olarak ayarlı olmalı.
+
+YAPILACAKLAR / KONTROL EDİLECEKLER:
+1. Eğer kullanıcı "giriş yapamıyorum" derse -> Supabase panelindeki Redirect URL ayarını kontrol ettir.
+2. Eğer "connection refused" derse -> Hardcoded credential'ların silinmediğinden emin ol.
+
+Kullanıcı "devam et" dediğinde bu bağlamla başla. Başarılar! 🚀
