@@ -115,42 +115,59 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Date Navigation & Sync */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card/30 p-4 rounded-xl border border-border/50">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => changeDate(-1)}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
+      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl p-3 rounded-[2rem] border border-primary/5 shadow-2xl overflow-hidden relative">
+        {/* Decorator Gradient */}
+        <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-[200px] justify-start text-left font-bold border-none bg-transparent hover:bg-accent/50",
-                  !date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
-                {format(date, "d MMMM yyyy", { locale: tr })}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={(d) => d && setDate(d)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-
-          <Button variant="ghost" size="icon" onClick={() => changeDate(1)}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+        {/* Left: Quick Actions / Status */}
+        <div className="flex items-center gap-3 pl-4 z-10">
+          <SyncButton />
+          <div className="h-10 w-px bg-primary/10 hidden md:block" />
+          <div className="hidden lg:flex flex-col">
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Bulut Durumu</span>
+            <span className="text-[9px] font-bold text-muted-foreground uppercase">Eşitleme Aktif</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <SyncButton />
+        {/* Center: Main Date Navigator (The "Floating" Pill) */}
+        <div className="flex items-center justify-center z-10">
+          <div className="flex items-center gap-2 bg-background/60 backdrop-blur-md rounded-2xl p-1.5 border border-primary/10 shadow-lg group hover:border-primary/30 transition-all duration-500">
+            <Button variant="ghost" size="icon" onClick={() => changeDate(-1)} className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "min-w-[200px] justify-center text-center font-black text-xl tracking-tighter hover:bg-transparent px-4 group-hover:text-primary transition-colors",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-5 w-5 text-primary animate-pulse" />
+                  {format(date, "d MMMM yyyy", { locale: tr })}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 border-none shadow-[0_20px_50px_rgba(215,25,32,0.15)] rounded-3xl overflow-hidden" align="center">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(d) => d && setDate(d)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+            <Button variant="ghost" size="icon" onClick={() => changeDate(1)} className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
+              <ChevronRight className="h-6 w-6" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Right: Closing Actions */}
+        <div className="flex items-center justify-end gap-3 pr-4 z-10">
+          <div className="h-10 w-px bg-primary/10 hidden md:block mx-2" />
           <DayClosingDialog record={currentRecord} onConfirm={handleSave} />
         </div>
       </div>
