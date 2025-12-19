@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, DollarSign, Wallet, FileSpreadsheet, Calendar as CalendarIcon, ArrowUpRight, ArrowDownRight, CircleDollarSign, Receipt, Coins, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ComparativeReport } from "./ComparativeReport";
+import { ForecastCard } from "./ForecastCard";
 
 
 export function ArchiveView() {
@@ -149,6 +150,9 @@ export function ArchiveView() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            {/* Oracle Forecast - AI Prediction */}
+            <ForecastCard />
+
             {/* Comparative Report - Week over Week */}
             <ComparativeReport />
 
