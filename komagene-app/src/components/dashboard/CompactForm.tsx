@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DailyRecord, ExpenseItem, IncomeData, LedgerItem, InventoryItem, ShiftData } from "@/types";
-import { Plus, Trash2, Save, ShoppingBag, CreditCard, Users, Package, RefreshCcw, CheckCircle2, XCircle, Banknote } from "lucide-react";
+import { Plus, Trash2, Save, ShoppingBag, CreditCard, Users, Package, RefreshCcw, CheckCircle2, XCircle, Banknote, Calendar, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/store/useStore";
-import { format } from "date-fns";
+import { format, differenceInDays, parseISO, isValid } from "date-fns";
 
 interface CompactFormProps {
     initialData: DailyRecord;
@@ -310,51 +310,104 @@ export function CompactForm({ initialData, onSave, disabled }: CompactFormProps)
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                {globalLedgers.filter(l => !l.isPaid).map((item) => (
-                                    <Card key={item.id} className="border-2 border-violet-200 dark:border-violet-500/20 bg-gradient-to-br from-violet-50 to-violet-100/50 dark:from-violet-500/10 dark:to-violet-500/5 shadow-md rounded-2xl overflow-hidden">
-                                        <CardContent className="p-5 space-y-4">
-                                            <div className="flex items-center justify-between gap-3">
-                                                <div className="flex-1">
-                                                    <Label className="text-xs font-black uppercase opacity-50 tracking-wider">Müşteri</Label>
-                                                    <Input
-                                                        disabled={disabled}
-                                                        className="border-2 border-violet-300 dark:border-violet-500/30 bg-white dark:bg-background/50 font-bold text-xl h-12 mt-1 rounded-xl"
-                                                        value={item.customer}
-                                                        onChange={(e) => {
-                                                            const updatedLedger = { ...item, customer: e.target.value };
-                                                            useStore.setState(state => ({
-                                                                globalLedgers: state.globalLedgers.map(l => l.id === item.id ? updatedLedger : l)
-                                                            }));
-                                                        }}
-                                                        placeholder="Müşteri Adı"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label className="text-xs font-black uppercase opacity-50 tracking-wider">Tutar</Label>
-                                                    <div className="relative mt-1">
-                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 font-black text-xl">₺</span>
+                                {globalLedgers.filter(l => !l.isPaid).map((item) => {
+                                    // Calculate due date status
+                                    const today = new Date();
+                                    let dueStatus: 'overdue' | 'soon' | 'ok' | 'none' = 'none';
+                                    let daysUntilDue = 0;
+
+                                    if (item.dueDate) {
+                                        const dueDate = parseISO(item.dueDate);
+                                        if (isValid(dueDate)) {
+                                            daysUntilDue = differenceInDays(dueDate, today);
+                                            if (daysUntilDue < 0) dueStatus = 'overdue';
+                                            else if (daysUntilDue <= 3) dueStatus = 'soon';
+                                            else dueStatus = 'ok';
+                                        }
+                                    }
+
+                                    return (
+                                        <Card key={item.id} className="border-2 border-violet-200 dark:border-violet-500/20 bg-gradient-to-br from-violet-50 to-violet-100/50 dark:from-violet-500/10 dark:to-violet-500/5 shadow-md rounded-2xl overflow-hidden">
+                                            <CardContent className="p-5 space-y-4">
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <div className="flex-1">
+                                                        <Label className="text-xs font-black uppercase opacity-50 tracking-wider">Müşteri</Label>
                                                         <Input
-                                                            type="number"
                                                             disabled={disabled}
-                                                            className="border-2 border-violet-300 dark:border-violet-500/30 bg-white dark:bg-background/50 font-black text-2xl h-14 pl-8 rounded-xl text-violet-600 dark:text-violet-400"
-                                                            value={item.amount || ""}
+                                                            className="border-2 border-violet-300 dark:border-violet-500/30 bg-white dark:bg-background/50 font-bold text-xl h-12 mt-1 rounded-xl"
+                                                            value={item.customer}
                                                             onChange={(e) => {
-                                                                const updatedLedger = { ...item, amount: parseFloat(e.target.value) || 0 };
+                                                                const updatedLedger = { ...item, customer: e.target.value };
                                                                 useStore.setState(state => ({
                                                                     globalLedgers: state.globalLedgers.map(l => l.id === item.id ? updatedLedger : l)
                                                                 }));
                                                             }}
-                                                            placeholder="0"
+                                                            placeholder="Müşteri Adı"
                                                         />
                                                     </div>
                                                 </div>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <Label className="text-xs font-black uppercase opacity-50 tracking-wider">Tutar</Label>
+                                                        <div className="relative mt-1">
+                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 font-black text-xl">₺</span>
+                                                            <Input
+                                                                type="number"
+                                                                disabled={disabled}
+                                                                className="border-2 border-violet-300 dark:border-violet-500/30 bg-white dark:bg-background/50 font-black text-2xl h-14 pl-8 rounded-xl text-violet-600 dark:text-violet-400"
+                                                                value={item.amount || ""}
+                                                                onChange={(e) => {
+                                                                    const updatedLedger = { ...item, amount: parseFloat(e.target.value) || 0 };
+                                                                    useStore.setState(state => ({
+                                                                        globalLedgers: state.globalLedgers.map(l => l.id === item.id ? updatedLedger : l)
+                                                                    }));
+                                                                }}
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-xs font-black uppercase opacity-50 tracking-wider flex items-center gap-2">
+                                                            <Calendar className="h-3 w-3" /> Son Ödeme Tarihi
+                                                        </Label>
+                                                        <Input
+                                                            type="date"
+                                                            disabled={disabled}
+                                                            className={cn(
+                                                                "border-2 bg-white dark:bg-background/50 font-bold h-14 mt-1 rounded-xl",
+                                                                dueStatus === 'overdue' ? "border-rose-500 text-rose-600" :
+                                                                    dueStatus === 'soon' ? "border-amber-500 text-amber-600" :
+                                                                        "border-violet-300 dark:border-violet-500/30"
+                                                            )}
+                                                            value={item.dueDate || ""}
+                                                            onChange={(e) => {
+                                                                const updatedLedger = { ...item, dueDate: e.target.value };
+                                                                useStore.setState(state => ({
+                                                                    globalLedgers: state.globalLedgers.map(l => l.id === item.id ? updatedLedger : l)
+                                                                }));
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                {/* Due Date Alert */}
+                                                {dueStatus !== 'none' && dueStatus !== 'ok' && (
+                                                    <div className={cn(
+                                                        "flex items-center gap-2 p-2 rounded-lg text-sm font-bold",
+                                                        dueStatus === 'overdue' ? "bg-rose-100 dark:bg-rose-950/30 text-rose-600" :
+                                                            "bg-amber-100 dark:bg-amber-950/30 text-amber-600"
+                                                    )}>
+                                                        <AlertTriangle className="h-4 w-4" />
+                                                        {dueStatus === 'overdue'
+                                                            ? `⚠️ Vadesi ${Math.abs(daysUntilDue)} gün geçti!`
+                                                            : `⏰ Vade ${daysUntilDue} gün sonra`
+                                                        }
+                                                    </div>
+                                                )}
                                                 <div>
                                                     <Label className="text-xs font-black uppercase opacity-50 tracking-wider">Açıklama</Label>
                                                     <Input
                                                         disabled={disabled}
-                                                        className="border-2 border-violet-300 dark:border-violet-500/30 bg-white dark:bg-background/50 font-bold h-14 mt-1 rounded-xl"
+                                                        className="border-2 border-violet-300 dark:border-violet-500/30 bg-white dark:bg-background/50 font-bold h-12 mt-1 rounded-xl"
                                                         value={item.description}
                                                         onChange={(e) => {
                                                             const updatedLedger = { ...item, description: e.target.value };
@@ -365,33 +418,33 @@ export function CompactForm({ initialData, onSave, disabled }: CompactFormProps)
                                                         placeholder="Not..."
                                                     />
                                                 </div>
-                                            </div>
-                                            <div className="flex items-center justify-between pt-2 border-t border-violet-200 dark:border-violet-500/20">
-                                                <span className="text-xs font-bold text-violet-400 opacity-60">
-                                                    Eklenme: {item.createdDate || 'Bilinmiyor'}
-                                                </span>
-                                                <div className="flex gap-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        disabled={disabled}
-                                                        onClick={() => removeLedger(item.id)}
-                                                        className="text-rose-500 border-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 h-9 px-4 font-bold rounded-xl"
-                                                    >
-                                                        <Trash2 className="h-4 w-4 mr-1" /> Sil
-                                                    </Button>
-                                                    <Button
-                                                        disabled={disabled || !item.customer || !item.amount}
-                                                        onClick={() => handlePayLedger(item.id)}
-                                                        className="bg-emerald-600 hover:bg-emerald-700 text-white h-9 px-5 font-black rounded-xl shadow-lg"
-                                                    >
-                                                        <Banknote className="h-4 w-4 mr-2" /> ÖDENDİ
-                                                    </Button>
+                                                <div className="flex items-center justify-between pt-2 border-t border-violet-200 dark:border-violet-500/20">
+                                                    <span className="text-xs font-bold text-violet-400 opacity-60">
+                                                        Eklenme: {item.createdDate || 'Bilinmiyor'}
+                                                    </span>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            disabled={disabled}
+                                                            onClick={() => removeLedger(item.id)}
+                                                            className="text-rose-500 border-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 h-9 px-4 font-bold rounded-xl"
+                                                        >
+                                                            <Trash2 className="h-4 w-4 mr-1" /> Sil
+                                                        </Button>
+                                                        <Button
+                                                            disabled={disabled || !item.customer || !item.amount}
+                                                            onClick={() => handlePayLedger(item.id)}
+                                                            className="bg-emerald-600 hover:bg-emerald-700 text-white h-9 px-5 font-black rounded-xl shadow-lg"
+                                                        >
+                                                            <Banknote className="h-4 w-4 mr-2" /> ÖDENDİ
+                                                        </Button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
                             </div>
                         )}
                     </TabsContent>

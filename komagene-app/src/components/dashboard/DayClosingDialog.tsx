@@ -2,8 +2,9 @@
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { DailyRecord } from "@/types";
-import { Lock, CheckCircle2, AlertTriangle, TrendingUp, TrendingDown, Wallet, RefreshCcw } from "lucide-react";
+import { Lock, CheckCircle2, AlertTriangle, TrendingUp, TrendingDown, Wallet, RefreshCcw, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +16,7 @@ interface DayClosingDialogProps {
 
 export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
     const [open, setOpen] = useState(false);
+    const [staffName, setStaffName] = useState("");
 
     const onlineTotal = Object.values(record.income.online).reduce((a, b) => a + (b || 0), 0);
     const totalCiro = (record.income.cash || 0) + (record.income.creditCard || 0) + onlineTotal;
@@ -23,9 +25,25 @@ export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
     const shiftDiff = record.shift.cashOnEnd - record.shift.cashOnStart;
 
     const handleCloseDay = () => {
-        onConfirm({ ...record, isClosed: true, isSynced: false });
+        if (!staffName.trim()) {
+            toast.error("Lütfen personel adınızı girin!");
+            return;
+        }
+
+        const updatedRecord: DailyRecord = {
+            ...record,
+            isClosed: true,
+            isSynced: false,
+            shift: {
+                ...record.shift,
+                closedBy: staffName.trim()
+            }
+        };
+
+        onConfirm(updatedRecord);
         setOpen(false);
-        toast.success("Gün başarıyla kapatıldı ve kilitlendi.");
+        setStaffName("");
+        toast.success(`Gün ${staffName} tarafından kapatıldı ve kilitlendi.`);
     };
 
     const formatCurrency = (val: number) =>
@@ -44,7 +62,9 @@ export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
                     )}
                 >
                     {record.isClosed ? <Lock className="h-4 w-4" /> : <RefreshCcw className="h-4 w-4" />}
-                    {record.isClosed ? "GÜN KAPATILDI" : "GÜNÜ KAPAT"}
+                    {record.isClosed ? (
+                        record.shift.closedBy ? `${record.shift.closedBy} KAPATTI` : "GÜN KAPATILDI"
+                    ) : "GÜNÜ KAPAT"}
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md border-none shadow-2xl bg-card/95 backdrop-blur-xl">
@@ -59,44 +79,57 @@ export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
                 </DialogHeader>
 
                 <div className="space-y-3 mt-4">
+                    {/* Personnel Name Input */}
+                    <div className="p-3 bg-primary/5 rounded-xl border-2 border-primary/20">
+                        <label className="flex items-center gap-2 text-xs font-black text-primary uppercase tracking-wider mb-2">
+                            <User className="h-4 w-4" /> Kapatan Personel
+                        </label>
+                        <Input
+                            placeholder="Adınızı girin..."
+                            value={staffName}
+                            onChange={(e) => setStaffName(e.target.value)}
+                            className="font-bold border-primary/20 focus:border-primary"
+                        />
+                    </div>
+
                     {/* Gelir Özeti */}
-                    <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                    <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
                         <div className="flex items-center gap-3">
                             <TrendingUp className="h-5 w-5 text-emerald-600" />
-                            <span className="text-sm font-bold text-emerald-800">Toplam Gelir</span>
+                            <span className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Toplam Gelir</span>
                         </div>
-                        <span className="font-black text-emerald-700">{formatCurrency(totalCiro)}</span>
+                        <span className="font-black text-emerald-700 dark:text-emerald-400">{formatCurrency(totalCiro)}</span>
                     </div>
 
                     {/* Gider Özeti */}
-                    <div className="flex items-center justify-between p-3 bg-rose-50 rounded-xl border border-rose-100">
+                    <div className="flex items-center justify-between p-3 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-100 dark:border-rose-900/50">
                         <div className="flex items-center gap-3">
                             <TrendingDown className="h-5 w-5 text-rose-600" />
-                            <span className="text-sm font-bold text-rose-800">Toplam Gider</span>
+                            <span className="text-sm font-bold text-rose-800 dark:text-rose-300">Toplam Gider</span>
                         </div>
-                        <span className="font-black text-rose-700">{formatCurrency(totalExpense)}</span>
+                        <span className="font-black text-rose-700 dark:text-rose-400">{formatCurrency(totalExpense)}</span>
                     </div>
 
                     {/* Net Sonuç */}
                     <div className={cn(
                         "flex items-center justify-between p-4 rounded-xl border-2 shadow-sm",
-                        netResult >= 0 ? "bg-sky-50 border-sky-200" : "bg-orange-50 border-orange-200"
+                        netResult >= 0 ? "bg-sky-50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800" : "bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800"
                     )}>
                         <div className="flex items-center gap-3">
                             <Wallet className={cn("h-6 w-6", netResult >= 0 ? "text-sky-600" : "text-orange-600")} />
-                            <span className={cn("font-black uppercase tracking-wider", netResult >= 0 ? "text-sky-800" : "text-orange-800")}>NET KASA</span>
+                            <span className={cn("font-black uppercase tracking-wider", netResult >= 0 ? "text-sky-800 dark:text-sky-300" : "text-orange-800 dark:text-orange-300")}>NET KASA</span>
                         </div>
-                        <span className={cn("text-xl font-black", netResult >= 0 ? "text-sky-700" : "text-orange-700")}>{formatCurrency(netResult)}</span>
+                        <span className={cn("text-xl font-black", netResult >= 0 ? "text-sky-700 dark:text-sky-400" : "text-orange-700 dark:text-orange-400")}>{formatCurrency(netResult)}</span>
                     </div>
 
                     {/* Vardiya Farkı */}
                     <div className={cn(
                         "flex items-center justify-between p-3 rounded-xl border border-dashed",
-                        shiftDiff === 0 ? "bg-slate-50 border-slate-200" : "bg-amber-50 border-amber-200"
+                        shiftDiff === 0 ? "bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700" : "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800"
                     )}>
                         <div className="flex items-center gap-3">
                             <RefreshCcw className="h-4 w-4 text-slate-500" />
-                            <span className="text-xs font-bold text-slate-600">Vardiya Devir Farkı</span>
+                            <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Vardiya Devir Farkı</span>
                         </div>
                         <span className={cn("text-sm font-bold", shiftDiff !== 0 && "text-amber-600")}>
                             {shiftDiff > 0 ? "+" : ""}{shiftDiff.toFixed(2)} ₺
@@ -106,7 +139,11 @@ export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
 
                 <DialogFooter className="mt-8">
                     <Button onClick={() => setOpen(false)} variant="ghost" className="font-bold">Vazgeç</Button>
-                    <Button onClick={handleCloseDay} className="bg-orange-600 hover:bg-orange-700 font-black gap-2 px-8 shadow-lg shadow-orange-200">
+                    <Button
+                        onClick={handleCloseDay}
+                        disabled={!staffName.trim()}
+                        className="bg-orange-600 hover:bg-orange-700 font-black gap-2 px-8 shadow-lg shadow-orange-200 disabled:opacity-50"
+                    >
                         <CheckCircle2 className="h-5 w-5" /> ŞİMDİ KAPAT
                     </Button>
                 </DialogFooter>

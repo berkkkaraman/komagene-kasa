@@ -26,6 +26,7 @@ export interface LedgerItem {
     description: string;
     isPaid: boolean;
     createdDate: string;  // Oluşturulma tarihi
+    dueDate?: string;     // Son ödeme tarihi (opsiyonel)
 }
 
 // Vardiya Teslim
@@ -33,6 +34,7 @@ export interface ShiftData {
     cashOnStart: number;
     cashOnEnd: number;
     difference: number;
+    closedBy?: string;    // Günü kapatan personel adı
 }
 
 // Envanter Kalemi
