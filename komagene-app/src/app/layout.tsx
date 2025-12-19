@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { NotificationProvider } from "@/components/NotificationProvider";
+import { CommandPalette } from "@/components/CommandPalette";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -51,6 +52,7 @@ export default function RootLayout({
               </header>
 
               <main className="flex-1 px-4 py-6">
+                <CommandPalette />
                 <NotificationProvider>
                   {children}
                 </NotificationProvider>
