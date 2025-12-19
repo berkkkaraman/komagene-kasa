@@ -11,6 +11,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, DollarSign, Wallet, FileSpreadsheet, Calendar as CalendarIcon, ArrowUpRight, ArrowDownRight, CircleDollarSign, Receipt, Coins, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ComparativeReport } from "./ComparativeReport";
 
 
 export function ArchiveView() {
@@ -148,6 +149,9 @@ export function ArchiveView() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            {/* Comparative Report - Week over Week */}
+            <ComparativeReport />
+
             {/* Header & Filters */}
             <div className="flex flex-col lg:flex-row items-center justify-between gap-6 pb-2">
                 <div className="space-y-1 text-center lg:text-left">
