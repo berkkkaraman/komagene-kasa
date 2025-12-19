@@ -20,8 +20,11 @@ function AutoDarkModeScheduler({ children }: { children: React.ReactNode }) {
             const hour = new Date().getHours();
             const isNightTime = hour >= 0 && hour < 6; // 00:00 - 06:00
 
-            // Only auto-switch if user hasn't manually set a theme (check for 'system' or auto-set)
-            if (isNightTime && theme !== 'dark') {
+            // Only auto-switch if the user is explicitly using 'system' preference
+            // or if we decide to be less aggressive.
+            // Current fix: If user is on 'light' mode, do NOT force dark.
+            // We only force dark if theme is 'system' and it's night time.
+            if (isNightTime && theme === 'system') {
                 setTheme('dark');
             }
         };
