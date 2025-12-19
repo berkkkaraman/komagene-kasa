@@ -23,7 +23,11 @@ import { toast } from "sonner";
 
 
 
-const AUTHORIZED_EMAILS = ["berkkkaraman@gmail.com"]; // Yetkili e-postalar listesi
+const AUTHORIZED_EMAILS = [
+  "berkkkaraman@gmail.com",
+  "berkaykrmn3@gmail.com",
+  "bunyaminserttas828@gmail.com"
+]; // Yetkili e-postalar listesi
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth();
