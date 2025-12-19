@@ -6,17 +6,18 @@ export const LedgerService = {
      * Syncs locally stored records to Supabase.
      * Only syncs records that are marked as isSynced: false.
      */
-    async syncToCloud(records: DailyRecord[]): Promise<{ success: boolean; syncedCount: number; error?: any }> {
+    async syncToCloud(records: DailyRecord[], branchId: string): Promise<{ success: boolean; syncedCount: number; error?: any }> {
         const unsyncedRecords = records.filter(r => !r.isSynced);
 
         if (unsyncedRecords.length === 0) {
             return { success: true, syncedCount: 0 };
         }
 
-        try {
-            // Phase 8: Default Branch ID (per requirement, placeholder for now)
-            const DEFAULT_BRANCH = '00000000-0000-0000-0000-000000000000';
+        if (!branchId) {
+            return { success: false, syncedCount: 0, error: { message: "Şube kimliği eksik." } };
+        }
 
+        try {
             const syncTasks = unsyncedRecords.map(async (record) => {
                 const { error } = await supabase
                     .from('records')
@@ -29,14 +30,14 @@ export const LedgerService = {
                         inventory: record.inventory,
                         shift: record.shift,
                         note: record.note,
-                        branch_id: DEFAULT_BRANCH,
+                        branch_id: branchId,
                         is_marked: false,
                         is_closed: record.isClosed,
-                    }, { onConflict: 'date, branch_id' });
+                    }, { onConflict: 'date, branch_id' }); // Conflict strategy updated
 
 
                 if (error) throw error;
-                return { ...record, isSynced: true };
+                return { ...record, isSynced: true, branch_id: branchId };
             });
 
             const updatedRecords = await Promise.all(syncTasks);
@@ -54,13 +55,14 @@ export const LedgerService = {
     /**
      * Fetches records from Supabase and merges them.
      */
-    async fetchFromCloud(): Promise<DailyRecord[]> {
+    async fetchFromCloud(branchId: string): Promise<DailyRecord[]> {
+        if (!branchId) return [];
+
         try {
-            const DEFAULT_BRANCH = '00000000-0000-0000-0000-000000000000';
             const { data, error } = await supabase
                 .from('records')
                 .select('*')
-                .eq('branch_id', DEFAULT_BRANCH)
+                .eq('branch_id', branchId)
                 .order('date', { ascending: false });
 
             if (error) throw error;
@@ -75,7 +77,8 @@ export const LedgerService = {
                 shift: row.shift || { cashOnStart: 0, cashOnEnd: 0, difference: 0 },
                 note: row.note,
                 isSynced: true,
-                isClosed: row.is_closed || false
+                isClosed: row.is_closed || false,
+                branch_id: row.branch_id
             }));
 
         } catch (error) {

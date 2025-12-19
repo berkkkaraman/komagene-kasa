@@ -16,18 +16,24 @@ export function SyncButton() {
     const unsyncedCount = records.filter(r => !r.isSynced).length;
 
     const handleSync = async () => {
-        if (!user) {
-            toast.error("Eşitleme için giriş yapmalısınız.");
+        // useAuth uses context, which is separate from Zustand store for profile data. 
+        // We need userProfile from Store (as it has branch_id)
+        // Alternatively, useAuth wraps profile fetching, but store is simpler access here.
+        const { userProfile } = useStore.getState();
+
+        if (!user || !userProfile?.branch_id) {
+            toast.error("Eşitleme için giriş yapmalı ve şube ataması almalısınız.");
             return;
         }
+
         setIsSyncing(true);
         try {
-            const { success, syncedCount, error } = await LedgerService.syncToCloud(records);
+            const { success, syncedCount, error } = await LedgerService.syncToCloud(records, userProfile.branch_id);
             if (success) {
                 // Update local state to reflect sync
-                const updatedRecords = records.map(r => ({ ...r, isSynced: true }));
+                const updatedRecords = records.map(r => ({ ...r, isSynced: true, branch_id: userProfile.branch_id }));
                 setRecords(updatedRecords);
-                toast.success(`${syncedCount} kayıt buluta eşitlendi.`);
+                toast.success(`${syncedCount} kayıt buluta (${userProfile.branch_id.substring(0, 6)}...) eşitlendi.`);
             } else {
                 toast.error("Eşitleme başarısız: " + (error?.message || "Bilinmeyen hata"));
             }
