@@ -27,6 +27,7 @@ export interface LedgerItem {
     isPaid: boolean;
     createdDate: string;  // Oluşturulma tarihi
     dueDate?: string;     // Son ödeme tarihi (opsiyonel)
+    branch_id?: string;    // Şube ID (SaaS)
 }
 
 // Vardiya Teslim
@@ -48,6 +49,7 @@ export interface InventoryItem {
 // Günlük Kayıt (Ana Yapı)
 export interface DailyRecord {
     id: string;
+    branch_id?: string;    // Şube ID (SaaS)
     date: string;
     income: IncomeData;
     expenses: ExpenseItem[];
@@ -57,6 +59,15 @@ export interface DailyRecord {
     note: string;
     isSynced: boolean;
     isClosed: boolean; // Gün kapatıldı mı?
+}
+
+// Kullanıcı Profili (SaaS)
+export interface UserProfile {
+    id: string;
+    email: string;
+    full_name?: string;
+    role: 'admin' | 'manager' | 'staff';
+    branch_id: string;
 }
 
 // State Management için ek tipler
@@ -70,13 +81,19 @@ export interface AppState {
     globalLedgers: LedgerItem[];  // Global veresiye listesi
     settings: AppSettings;
     isLoading: boolean;
+    userProfile: UserProfile | null; // Aktif kullanıcı profili
+
+    // Actions
     addRecord: (record: DailyRecord) => void;
     updateRecord: (record: DailyRecord) => void;
     deleteRecord: (id: string) => void;
     setRecords: (records: DailyRecord[]) => void;
+
     setTheme: (theme: AppSettings['theme']) => void;
     login: () => void;
     logout: () => void;
+    setUserProfile: (profile: UserProfile | null) => void;
+
     // Veresiye işlemleri
     addLedger: (ledger: LedgerItem) => void;
     removeLedger: (id: string) => void;

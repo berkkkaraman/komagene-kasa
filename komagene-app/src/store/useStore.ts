@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AppState, DailyRecord, AppSettings, LedgerItem } from '@/types';
+import { AppState, DailyRecord, AppSettings, LedgerItem, UserProfile } from '@/types';
 
 export const useStore = create<AppState>()(
     persist(
@@ -12,16 +12,23 @@ export const useStore = create<AppState>()(
                 isLoggedIn: false,
             },
             isLoading: false,
+            userProfile: null,
 
             addRecord: (record) =>
                 set((state) => ({
-                    records: [...state.records, { ...record, isSynced: false }]
+                    records: [...state.records, {
+                        ...record,
+                        isSynced: false,
+                        branch_id: state.userProfile?.branch_id // Auto-assign branch_id
+                    }]
                 })),
 
             updateRecord: (updatedRecord) =>
                 set((state) => ({
                     records: state.records.map((r) =>
-                        r.id === updatedRecord.id ? { ...updatedRecord, isSynced: false } : r
+                        r.id === updatedRecord.id
+                            ? { ...updatedRecord, isSynced: false, branch_id: state.userProfile?.branch_id || r.branch_id }
+                            : r
                     ),
                 })),
 
@@ -45,12 +52,21 @@ export const useStore = create<AppState>()(
             logout: () =>
                 set((state) => ({
                     settings: { ...state.settings, isLoggedIn: false },
+                    userProfile: null, // Clear profile on logout
+                    records: [],       // Clear records on logout (security)
+                    globalLedgers: []
                 })),
+
+            setUserProfile: (profile) =>
+                set({ userProfile: profile }),
 
             // Veresiye işlemleri
             addLedger: (ledger) =>
                 set((state) => ({
-                    globalLedgers: [...state.globalLedgers, ledger]
+                    globalLedgers: [...state.globalLedgers, {
+                        ...ledger,
+                        branch_id: state.userProfile?.branch_id // Auto-assign branch_id
+                    }]
                 })),
 
             removeLedger: (id) =>
@@ -97,7 +113,8 @@ export const useStore = create<AppState>()(
                         shift: { cashOnStart: 0, cashOnEnd: 0, difference: 0 },
                         note: '',
                         isSynced: false,
-                        isClosed: false
+                        isClosed: false,
+                        branch_id: state.userProfile?.branch_id // Auto-assign branch_id
                     };
 
                     set({
