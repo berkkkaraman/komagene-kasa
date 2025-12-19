@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SyncButton } from "@/components/SyncButton";
+import { AnomalyAlerts } from "@/components/dashboard/AnomalyAlerts";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { DayClosingDialog } from "@/components/dashboard/DayClosingDialog";
 import { DateRibbon } from "@/components/dashboard/DateRibbon";
@@ -127,6 +128,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Anomaly Alerts (Sentinel) */}
+      <AnomalyAlerts />
+
       {/* Date Navigation & Sync */}
       <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl p-3 rounded-[2rem] border border-primary/5 shadow-2xl overflow-hidden relative">
         {/* Decorator Gradient */}
