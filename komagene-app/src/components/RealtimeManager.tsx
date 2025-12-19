@@ -1,7 +1,9 @@
+"use client";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { useStore } from "@/store/useStore";
 import { useRealtimeSubscription } from "@/hooks/useRealtime";
 

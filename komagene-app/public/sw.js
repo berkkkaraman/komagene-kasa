@@ -8,18 +8,18 @@ const ASSETS_TO_CACHE = [
 ];
 
 // Install Event: Cache core assets
-self.addEventListener("install", (event: any) => {
+self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log("📦 Service Worker: Caching App Shell");
             return cache.addAll(ASSETS_TO_CACHE);
         })
     );
-    (self as any).skipWaiting();
+    self.skipWaiting();
 });
 
 // Activate Event: Cleanup old caches
-self.addEventListener("activate", (event: any) => {
+self.addEventListener("activate", (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
@@ -30,7 +30,7 @@ self.addEventListener("activate", (event: any) => {
 });
 
 // Fetch Event: Network First, then Cache
-self.addEventListener("fetch", (event: any) => {
+self.addEventListener("fetch", (event) => {
     // Only handle HTTP/HTTPS protocols
     if (!event.request.url.startsWith("http")) return;
 
