@@ -7,7 +7,7 @@ import { tr } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from "recharts";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, DollarSign, Wallet, FileSpreadsheet, Calendar as CalendarIcon, ArrowUpRight, ArrowDownRight, CircleDollarSign, Receipt, Coins, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -61,6 +61,34 @@ export function ArchiveView() {
             net: totalIncome - totalExpense
         };
     });
+
+    // Expense Category Pie Chart Data
+    const categoryLabels: Record<string, string> = {
+        supplier: 'Tedarikçi',
+        staff: 'Personel',
+        bills: 'Faturalar',
+        tax: 'Vergi',
+        other: 'Diğer'
+    };
+    const categoryColors: Record<string, string> = {
+        supplier: '#f97316',
+        staff: '#8b5cf6',
+        bills: '#06b6d4',
+        tax: '#ef4444',
+        other: '#64748b'
+    };
+    const expenseByCategory = filteredData.reduce((acc, r) => {
+        r.expenses.forEach(exp => {
+            const cat = exp.category || 'other';
+            acc[cat] = (acc[cat] || 0) + exp.amount;
+        });
+        return acc;
+    }, {} as Record<string, number>);
+    const pieData = Object.entries(expenseByCategory).map(([key, value]) => ({
+        name: categoryLabels[key] || key,
+        value,
+        color: categoryColors[key] || '#64748b'
+    }));
 
     const downloadExcel = () => {
         const filterNames: Record<string, string> = {
@@ -245,6 +273,46 @@ export function ArchiveView() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Expense Category Pie Chart */}
+            {pieData.length > 0 && (
+                <Card className="border-2 border-slate-200 dark:border-white/10 shadow-lg bg-white dark:bg-slate-900/40 backdrop-blur-xl overflow-hidden rounded-2xl">
+                    <CardHeader className="border-b-2 border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 py-4">
+                        <CardTitle className="text-xs font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                            <Receipt className="h-4 w-4" /> Gider Dağılımı (Kategorilere Göre)
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={pieData}
+                                        cx="50%"
+                                        cy="50%"
+                                        labelLine={false}
+                                        label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                                        outerRadius={100}
+                                        innerRadius={50}
+                                        fill="#8884d8"
+                                        dataKey="value"
+                                        paddingAngle={2}
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        formatter={(value) => formatCurrency(Number(value ?? 0))}
+                                        contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '2px solid #e2e8f0', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}
+                                    />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Detailed History Table/List */}
             <div className="space-y-4">
