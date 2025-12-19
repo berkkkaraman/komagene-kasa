@@ -63,6 +63,18 @@ export default function DashboardPage() {
   // Yetkisiz giriş kontrolü
   const isAuthorized = AUTHORIZED_EMAILS.includes(user.email || "");
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("Başarıyla çıkış yapıldı.");
+      // Force reload to clear any cached state
+      window.location.reload();
+    } catch (error) {
+      console.error("Çıkış hatası:", error);
+      toast.error("Çıkış yapılırken bir hata oluştu. Tekrar deneyin.");
+    }
+  };
+
   if (!isAuthorized) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
@@ -70,7 +82,7 @@ export default function DashboardPage() {
         <p className="text-muted-foreground text-center max-w-sm">
           Bu hesaba (`{user.email}`) sistem erişim yetkisi verilmemiştir. Lütfen yetkili bir hesapla tekrar deneyin.
         </p>
-        <Button variant="outline" onClick={() => signOut()} className="gap-2">
+        <Button variant="outline" onClick={handleSignOut} className="gap-2">
           Güvenli Çıkış Yap
         </Button>
       </div>
