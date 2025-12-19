@@ -55,7 +55,7 @@ export function Sidebar() {
                                     <div className="p-1 bg-primary rounded-lg">
                                         <Package className="h-6 w-6 text-primary-foreground" />
                                     </div>
-                                    <SheetTitle className="text-xl font-bold">Komagene</SheetTitle>
+                                    <SheetTitle className="text-xl font-bold">Günkasa</SheetTitle>
                                 </div>
                             </SheetHeader>
                         </div>

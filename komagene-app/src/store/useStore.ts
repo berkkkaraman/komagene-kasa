@@ -108,7 +108,7 @@ export const useStore = create<AppState>()(
             },
         }),
         {
-            name: 'komagene-storage',
+            name: 'gunkasa-storage',
         }
     )
 );

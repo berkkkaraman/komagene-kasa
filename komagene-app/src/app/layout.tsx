@@ -10,8 +10,8 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Komagene Şube Yönetimi",
-  description: "Profesyonel Şube Yönetim Paneli",
+  title: "Günkasa - İşletme Yönetim Paneli",
+  description: "Modern, Güvenli ve Akıllı İşletme Yönetimi",
 };
 
 export default function RootLayout({
@@ -35,7 +35,7 @@ export default function RootLayout({
                 <div className="px-4 flex h-14 items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Sidebar />
-                    <span className="font-extrabold text-lg tracking-tight uppercase italic hidden md:inline-block">KOMAGENE <span className="text-primary not-italic">PANEL</span></span>
+                    <span className="font-extrabold text-lg tracking-tight uppercase italic hidden md:inline-block">GÜN<span className="text-primary not-italic">KASA</span></span>
                   </div>
                   <div className="flex items-center gap-4">
                     <ThemeToggle />

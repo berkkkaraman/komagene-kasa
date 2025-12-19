@@ -107,7 +107,7 @@ export function ArchiveView() {
 
         const link = document.createElement('a');
         link.setAttribute('href', url);
-        link.setAttribute('download', `Komagene_Rapor_${filterNames[filter]}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute('download', `Gunkasa_Rapor_${filterNames[filter]}_${new Date().toISOString().split('T')[0]}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

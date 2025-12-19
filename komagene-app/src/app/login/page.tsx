@@ -44,9 +44,9 @@ export default function LoginPage() {
                     <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
                         <Salad className="w-10 h-10 text-primary" />
                     </div>
-                    <CardTitle className="text-3xl font-extrabold tracking-tight">KOMAGENE</CardTitle>
+                    <CardTitle className="text-3xl font-extrabold tracking-tight">GÜNKASA</CardTitle>
                     <CardDescription className="font-bold text-foreground/60 uppercase tracking-widest text-xs">
-                        Merkezi Yönetim Sistemi
+                        İşletme Yönetim Sistemi
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleLogin}>
