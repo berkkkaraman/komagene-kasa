@@ -33,8 +33,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 .eq('id', userId)
                 .single();
 
+            if (error) {
+                console.error("❌ Profil Çekme Hatası:", error.message, error.details);
+                setUserProfile(null);
+                return;
+            }
+
             if (data) {
-                // Type casting because database types might not be generated yet
                 const profile = {
                     id: data.id,
                     email: data.email,
@@ -44,15 +49,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 };
                 setUserProfile(profile);
                 login();
-            } else {
-                console.warn("Profil bulunamadı, bekleniyor...");
-                // If profile doesn't exist yet (triggers running), we might need to retry or 
-                // handle it gracefully. For now, we assume trigger handles it fast enough
-                // or we are in 'legacy' mode where we might default to main.
-                setUserProfile(null);
             }
         } catch (e) {
-            console.error("Profil getirme hatası:", e);
+            console.error("🔥 Beklenmedik Hata:", e);
         }
     };
 
