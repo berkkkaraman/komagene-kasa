@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Calculator, RotateCcw, Banknote } from "lucide-react";
+import { Calculator, RotateCcw, Banknote, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const DENOMINATIONS = [
     { value: 200, label: "200₺", color: "bg-violet-500" },
@@ -20,7 +21,12 @@ const DENOMINATIONS = [
     { value: 0.25, label: "25kr", color: "bg-zinc-300" },
 ];
 
-export function CashCounter() {
+interface CashCounterProps {
+    onApply?: (total: number) => void;
+    showApplyButton?: boolean;
+}
+
+export function CashCounter({ onApply, showApplyButton = false }: CashCounterProps) {
     const [counts, setCounts] = useState<Record<number, number>>({});
 
     const handleCountChange = (denomination: number, count: string) => {
@@ -33,6 +39,14 @@ export function CashCounter() {
     }, 0);
 
     const reset = () => setCounts({});
+
+    const handleApply = () => {
+        if (onApply && total > 0) {
+            onApply(total);
+            toast.success(`₺${total.toFixed(2)} kasaya aktarıldı!`);
+            reset();
+        }
+    };
 
     const formatCurrency = (val: number) =>
         new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(val);
@@ -115,6 +129,17 @@ export function CashCounter() {
                         {formatCurrency(total)}
                     </p>
                 </div>
+
+                {/* Apply Button */}
+                {showApplyButton && onApply && (
+                    <Button
+                        onClick={handleApply}
+                        disabled={total <= 0}
+                        className="w-full h-12 gap-2 font-black text-base bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20"
+                    >
+                        <Check className="h-5 w-5" /> KASAYA UYGULA
+                    </Button>
+                )}
             </CardContent>
         </Card>
     );

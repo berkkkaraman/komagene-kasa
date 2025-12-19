@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/store/useStore";
 import { format, differenceInDays, parseISO, isValid } from "date-fns";
+import { CashCounter } from "./CashCounter";
 
 interface CompactFormProps {
     initialData: DailyRecord;
@@ -496,6 +497,14 @@ export function CompactForm({ initialData, onSave, disabled }: CompactFormProps)
                                             {(shift.cashOnEnd - shift.cashOnStart).toFixed(2)} ₺
                                         </span>
                                     </div>
+                                </div>
+
+                                {/* Cash Counter Integration */}
+                                <div className="mt-6">
+                                    <CashCounter
+                                        showApplyButton={!disabled}
+                                        onApply={(total) => setShift(prev => ({ ...prev, cashOnEnd: total }))}
+                                    />
                                 </div>
                             </div>
 
