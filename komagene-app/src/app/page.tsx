@@ -23,8 +23,10 @@ import { toast } from "sonner";
 
 
 
+const AUTHORIZED_EMAILS = ["berkkkaraman@gmail.com"]; // Yetkili e-postalar listesi
+
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const [date, setDate] = useState<Date>(new Date());
   const { records, addRecord, updateRecord } = useStore();
   const [mounted, setMounted] = useState(false);
@@ -35,6 +37,7 @@ export default function DashboardPage() {
 
   if (!mounted || loading) return null;
 
+  // Giriş yapılmamışsa giriş ekranını göster
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
@@ -47,6 +50,23 @@ export default function DashboardPage() {
           className="gap-2"
         >
           Google ile Giriş Yap
+        </Button>
+      </div>
+    );
+  }
+
+  // Yetkisiz giriş kontrolü
+  const isAuthorized = AUTHORIZED_EMAILS.includes(user.email || "");
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <h2 className="text-2xl font-bold text-destructive">Erişim Engellendi</h2>
+        <p className="text-muted-foreground text-center max-w-sm">
+          Bu hesaba (`{user.email}`) sistem erişim yetkisi verilmemiştir. Lütfen yetkili bir hesapla tekrar deneyin.
+        </p>
+        <Button variant="outline" onClick={() => signOut()} className="gap-2">
+          Güvenli Çıkış Yap
         </Button>
       </div>
     );
