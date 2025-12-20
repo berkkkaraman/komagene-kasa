@@ -33,6 +33,12 @@ const routes = [
         href: "/settings",
         color: "text-gray-500",
     },
+    {
+        label: "Dijital Menü",
+        icon: Menu,
+        href: "/admin/products",
+        color: "text-red-500",
+    },
 ];
 
 export function Sidebar() {

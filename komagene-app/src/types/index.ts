@@ -70,6 +70,18 @@ export interface UserProfile {
     branch_id: string;
 }
 
+export interface Product {
+    id: string;
+    branch_id: string;
+    name: string;
+    price: number;
+    category: string;
+    image_url?: string;
+    description?: string;
+    is_active: boolean;
+    created_at?: string;
+}
+
 // State Management için ek tipler
 export interface AppSettings {
     theme: 'light' | 'dark' | 'system';
