@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Archive, Settings, Menu, Package, Info, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Archive, Settings, Menu, Package, Info, BarChart3, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,12 @@ const routes = [
         icon: Archive,
         href: "/archive",
         color: "text-violet-500",
+    },
+    {
+        label: "Şubeler Ligi",
+        icon: Trophy,
+        href: "/league",
+        color: "text-yellow-500",
     },
     {
         label: "Ayarlar",
