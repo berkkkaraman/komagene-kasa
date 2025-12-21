@@ -8,6 +8,7 @@ import { Lock, CheckCircle2, AlertTriangle, TrendingUp, TrendingDown, Wallet, Re
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AudioRecorder } from "./AudioRecorder";
 
 interface DayClosingDialogProps {
     record: DailyRecord;
@@ -15,8 +16,8 @@ interface DayClosingDialogProps {
 }
 
 export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
-    const [open, setOpen] = useState(false);
     const [staffName, setStaffName] = useState("");
+    const [audioNote, setAudioNote] = useState<string | undefined>(undefined);
 
     const onlineTotal = Object.values(record.income.online).reduce((a, b) => a + (b || 0), 0);
     const totalCiro = (record.income.cash || 0) + (record.income.creditCard || 0) + onlineTotal;
@@ -36,13 +37,15 @@ export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
             isSynced: false,
             shift: {
                 ...record.shift,
-                closedBy: staffName.trim()
+                closedBy: staffName.trim(),
+                note: audioNote // Ses kaydını buraya ekliyoruz (Types update gerekebilir ama JSONB esnek)
             }
         };
 
         onConfirm(updatedRecord);
         setOpen(false);
         setStaffName("");
+        setAudioNote(undefined);
         toast.success(`Gün ${staffName} tarafından kapatıldı ve kilitlendi.`);
     };
 

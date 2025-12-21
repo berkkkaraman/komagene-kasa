@@ -18,12 +18,10 @@ function AutoDarkModeScheduler({ children }: { children: React.ReactNode }) {
 
         const checkNightMode = () => {
             const hour = new Date().getHours();
-            const isNightTime = hour >= 0 && hour < 6; // 00:00 - 06:00
+            // GÜNKASA UPDATE: 19:00 (7 PM) ile 07:00 (7 AM) arası Karanlık Mod
+            const isNightTime = hour >= 19 || hour < 7;
 
             // Only auto-switch if the user is explicitly using 'system' preference
-            // or if we decide to be less aggressive.
-            // Current fix: If user is on 'light' mode, do NOT force dark.
-            // We only force dark if theme is 'system' and it's night time.
             if (isNightTime && theme === 'system') {
                 setTheme('dark');
             }
