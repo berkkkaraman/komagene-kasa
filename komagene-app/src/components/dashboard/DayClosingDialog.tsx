@@ -16,6 +16,7 @@ interface DayClosingDialogProps {
 }
 
 export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
+    const [open, setOpen] = useState(false);
     const [staffName, setStaffName] = useState("");
     const [audioNote, setAudioNote] = useState<string | undefined>(undefined);
 
