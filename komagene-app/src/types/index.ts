@@ -36,6 +36,7 @@ export interface ShiftData {
     cashOnEnd: number;
     difference: number;
     closedBy?: string;    // Günü kapatan personel adı
+    note?: string;        // Sesli Vardiya Notu (Base64)
 }
 
 // Envanter Kalemi

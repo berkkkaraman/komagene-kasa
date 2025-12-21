@@ -18,6 +18,7 @@ interface DayClosingDialogProps {
 export function DayClosingDialog({ record, onConfirm }: DayClosingDialogProps) {
     const [staffName, setStaffName] = useState("");
     const [audioNote, setAudioNote] = useState<string | undefined>(undefined);
+    const [audioNote, setAudioNote] = useState<string | undefined>(undefined);
 
     const onlineTotal = Object.values(record.income.online).reduce((a, b) => a + (b || 0), 0);
     const totalCiro = (record.income.cash || 0) + (record.income.creditCard || 0) + onlineTotal;
