@@ -8,6 +8,22 @@ export interface IncomeData {
         trendyol: number;
         gelal: number;
     };
+    source: 'manual' | 'email_auto' | 'online_sync';
+}
+
+export type OrderSource = 'yemeksepeti' | 'getir' | 'trendyol' | 'pos_email_import' | 'manual_override';
+
+export interface ZReport {
+    id: string;
+    branch_id: string;
+    date: string;
+    raw_email_content?: string;
+    total_amount: number;
+    credit_card_total: number;
+    cash_total: number;
+    source: 'email_auto' | 'manual';
+    status: 'pending' | 'processed' | 'error';
+    created_at?: string;
 }
 
 // Gider Kalemi

@@ -35,13 +35,15 @@ export function CompactForm({ initialData, onSave, disabled }: CompactFormProps)
         const num = parseFloat(value) || 0;
         if (field.includes('.')) {
             const [parent, child] = field.split('.');
-            setIncome(prev => ({
-                ...prev,
-                [parent]: {
-                    ...(prev as any)[parent],
-                    [child]: num
-                }
-            }));
+            if (parent === 'online') {
+                setIncome(prev => ({
+                    ...prev,
+                    online: {
+                        ...prev.online,
+                        [child]: num
+                    }
+                }));
+            }
         } else {
             setIncome(prev => ({ ...prev, [field]: num }));
         }
@@ -169,7 +171,7 @@ export function CompactForm({ initialData, onSave, disabled }: CompactFormProps)
                                                         type="number"
                                                         disabled={disabled}
                                                         className="h-8 text-[11px] font-black bg-white dark:bg-background/50 border-2 border-orange-300 dark:border-orange-500/20 rounded-lg"
-                                                        value={(income.online as any)[platform] || ""}
+                                                        value={(income.online as Record<string, number>)[platform] || ""}
                                                         onChange={(e) => handleIncomeChange(`online.${platform}`, e.target.value)}
                                                         placeholder="0"
                                                     />

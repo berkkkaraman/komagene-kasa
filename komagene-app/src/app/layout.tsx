@@ -10,6 +10,7 @@ import { NotificationProvider } from "@/components/NotificationProvider";
 import { CommandPalette } from "@/components/CommandPalette";
 import { RealtimeManager } from "@/components/RealtimeManager";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { AutoSyncManager } from "@/components/AutoSyncManager";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -57,6 +58,7 @@ export default function RootLayout({
 
               <main className="flex-1 px-4 py-6">
                 <CommandPalette />
+                <AutoSyncManager />
                 <NotificationProvider>
                   {children}
                 </NotificationProvider>

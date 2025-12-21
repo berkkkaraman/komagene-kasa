@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Trash2, RefreshCw, Database, Wifi, Smartphone, Lock } from "lucide-react";
+import { Trash2, RefreshCw, Database, Smartphone, Lock, ShieldAlert } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function DebugPage() {
@@ -101,6 +101,58 @@ export default function DebugPage() {
         await fetchCloudData(userProfile.branch_id);
     };
 
+    const handleForceProfileRepair = async () => {
+        if (!user) return;
+        setIsLoading(true);
+        try {
+            toast.info("Profil ve Şube onarımı deneniyor...");
+
+            // 1. Merkez şubeyi bul veya oluştur
+            let { data: branch, error: bError } = await supabase
+                .from('branches')
+                .select('id')
+                .eq('slug', 'merkez-sube')
+                .maybeSingle();
+
+            let targetBranchId: string;
+
+            if (bError) throw bError;
+
+            if (!branch) {
+                const { data: newBranch, error: createError } = await supabase
+                    .from('branches')
+                    .insert({ name: 'Komagene Merkez', slug: 'merkez-sube' })
+                    .select()
+                    .single();
+                if (createError) throw createError;
+                targetBranchId = newBranch.id;
+            } else {
+                targetBranchId = branch.id;
+            }
+
+            // 2. Profili güncelle veya oluştur
+            const { error: pError } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    email: user.email,
+                    branch_id: targetBranchId,
+                    role: 'admin',
+                    full_name: 'Berkay Karaman'
+                });
+
+            if (pError) throw pError;
+
+            toast.success("Onarım başarılı! Sayfayı yenileyin.");
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (e: any) {
+            console.error("Onarım Hatası:", e);
+            toast.error("Onarım Hatası: " + (e.message || "Bilinmeyen hata"));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="container mx-auto p-4 space-y-6 max-w-4xl">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
@@ -178,6 +230,30 @@ export default function DebugPage() {
             </div>
 
             {/* 3. Aggressive Actions */}
+            <Card className="border-amber-500/20 bg-amber-500/5">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-amber-600">
+                        <ShieldAlert className="h-5 w-5" />
+                        Profil & Şube Onarımı
+                    </CardTitle>
+                    <CardDescription>
+                        Şube ID "Yok" görünüyorsa bu butona basın.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        className="w-full gap-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white"
+                        onClick={handleForceProfileRepair}
+                        disabled={isLoading}
+                    >
+                        <RefreshCw className={isLoading ? "animate-spin" : ""} />
+                        PROFİLİ VE ŞUBEYİ ZORLA EŞİTLE (FIX)
+                    </Button>
+                </CardContent>
+            </Card>
+
             <Card className="border-red-500/20 bg-red-500/5">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-red-600">

@@ -6,21 +6,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2, Database, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { type Session } from "@supabase/supabase-js";
 
 export function SaaSDiagnostic() {
     const { userProfile, settings } = useStore();
-    const [session, setSession] = useState<any>(null);
-    const [envCheck, setEnvCheck] = useState<string>("Bilinmiyor");
+    const [session, setSession] = useState<Session | null>(null);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data }) => {
             setSession(data.session);
         });
-
-        // Check if env var is loaded (client side)
-        const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        setEnvCheck(url ? `Yüklü (${url.substring(0, 8)}...)` : "YÜKLÜ DEĞİL ❌");
     }, []);
+
+    // Derived state for env check
+    const url = typeof window !== 'undefined' ? process.env.NEXT_PUBLIC_SUPABASE_URL : "";
+    const envCheck = url ? `Yüklü (${url.substring(0, 8)}...)` : "YÜKLÜ DEĞİL ❌";
 
     // 1. Durum: Giriş Yapılmamışsa veya Profil Yoksa (HATA EKRANI)
     if (!settings.isLoggedIn || !userProfile) {
@@ -97,7 +97,7 @@ export function SaaSDiagnostic() {
                 {!userProfile.branch_id && (
                     <div className="p-3 bg-rose-100/50 text-rose-600 text-xs rounded-lg border border-rose-200">
                         ⚠️ DİKKAT: Kullanıcıya atanmış bir şube bulunamadı. Veri göremeyebilir veya ekleyemeyebilirsiniz.
-                        Lütfen Supabase üzerinden 'profiles' tablosunu kontrol edin.
+                        Lütfen Supabase üzerinden &apos;profiles&apos; tablosunu kontrol edin.
                     </div>
                 )}
             </CardContent>

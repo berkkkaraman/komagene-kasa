@@ -1,35 +1,25 @@
-import { supabase } from '@/lib/supabase';
-import { Product } from '@/types';
+import { supabase } from "@/lib/supabase";
+import { Product } from "@/types";
 
-export const ProductService = {
-    async getProducts(branchId: string) {
+export const productService = {
+    async fetchProducts(branchId: string) {
         const { data, error } = await supabase
             .from('products')
             .select('*')
             .eq('branch_id', branchId)
-            .order('category', { ascending: true })
-            .order('name', { ascending: true });
+            .order('category', { ascending: true });
 
         if (error) throw error;
         return data as Product[];
     },
 
-    async createProduct(product: Omit<Product, 'id' | 'created_at'>) {
+    async saveProduct(product: Partial<Product>) {
         const { data, error } = await supabase
             .from('products')
-            .insert([product])
-            .select()
-            .single();
-
-        if (error) throw error;
-        return data as Product;
-    },
-
-    async updateProduct(id: string, updates: Partial<Product>) {
-        const { data, error } = await supabase
-            .from('products')
-            .update(updates)
-            .eq('id', id)
+            .upsert({
+                ...product,
+                updated_at: new Date().toISOString()
+            })
             .select()
             .single();
 
@@ -44,5 +34,6 @@ export const ProductService = {
             .eq('id', id);
 
         if (error) throw error;
+        return true;
     }
 };

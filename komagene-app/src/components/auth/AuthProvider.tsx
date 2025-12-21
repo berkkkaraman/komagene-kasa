@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { useStore } from "@/store/useStore";
+import { toast } from "sonner";
+import { useRef } from "react";
 
 interface AuthContextType {
     user: User | null;
@@ -24,17 +26,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
     const { setUserProfile, login, logout } = useStore();
+    const fetchingInProgress = useRef<string | null>(null);
 
     const fetchProfile = async (userId: string) => {
+        if (fetchingInProgress.current === userId) return;
+        fetchingInProgress.current = userId;
+
         try {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
-                .single();
+                .maybeSingle(); // maybeSingle avoids the 'PGRST116' error if profile is missing
 
             if (error) {
                 console.error("❌ Profil Çekme Hatası:", error.message, error.details);
+                // toast.error is removed from here to prevent loops, 
+                // we'll handle UI feedback in the component that needs the profile
                 setUserProfile(null);
                 return;
             }
@@ -49,9 +57,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 };
                 setUserProfile(profile);
                 login();
+            } else {
+                console.warn("⚠️ Profil bulunamadı, şube ataması bekleniyor...");
+                setUserProfile(null);
             }
         } catch (e) {
             console.error("🔥 Beklenmedik Hata:", e);
+        } finally {
+            fetchingInProgress.current = null;
         }
     };
 
@@ -74,6 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (session?.user) {
                 fetchProfile(session.user.id);
             } else {
+                setUserProfile(null);
                 logout(); // Store temizliği
             }
 

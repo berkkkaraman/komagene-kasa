@@ -8,7 +8,7 @@ import { DailyRecord } from "@/types";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { CompactForm } from "@/components/dashboard/CompactForm";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronLeft, ChevronRight, History, Lock } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight, History, Lock, AlertCircle } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -20,17 +20,15 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { DayClosingDialog } from "@/components/dashboard/DayClosingDialog";
 import { DateRibbon } from "@/components/dashboard/DateRibbon";
 import { supabase } from "@/lib/supabase";
-
+import { AutomationStatus } from "@/components/dashboard/AutomationStatus";
 import { toast } from "sonner";
-
-
 
 const AUTHORIZED_EMAILS = [
   "berkkkaraman@gmail.com",
   "berkaykrmn3@gmail.com",
   "bunyaminserttas828@gmail.com",
   "halatmuhammetalper@gmail.com"
-]; // Yetkili e-postalar listesi
+];
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth();
@@ -44,7 +42,6 @@ export default function DashboardPage() {
 
   if (!mounted || loading) return null;
 
-  // Giriş yapılmamışsa giriş ekranını göster
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
@@ -62,14 +59,12 @@ export default function DashboardPage() {
     );
   }
 
-  // Yetkisiz giriş kontrolü
   const isAuthorized = AUTHORIZED_EMAILS.includes(user.email || "");
 
   const handleSignOut = async () => {
     try {
       await signOut();
       toast.success("Başarıyla çıkış yapıldı.");
-      // Force reload to clear any cached state
       window.location.reload();
     } catch (error) {
       console.error("Çıkış hatası:", error);
@@ -91,14 +86,14 @@ export default function DashboardPage() {
     );
   }
 
-
   const dateStr = format(date, "yyyy-MM-dd");
   const currentRecord: DailyRecord = records.find(r => r.date === dateStr) || {
     id: crypto.randomUUID(),
     date: dateStr,
     income: {
       cash: 0, creditCard: 0,
-      online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 }
+      online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 },
+      source: 'manual'
     },
     expenses: [],
     ledgers: [],
@@ -109,8 +104,6 @@ export default function DashboardPage() {
     isClosed: false
   };
 
-
-
   const handleSave = (record: any) => {
     const exists = records.some(r => r.date === record.date);
     if (exists) {
@@ -120,7 +113,6 @@ export default function DashboardPage() {
     }
   };
 
-
   const changeDate = (days: number) => {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + days);
@@ -129,28 +121,35 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Anomaly Alerts (Sentinel) */}
       <AnomalyAlerts />
       <LivePulse />
 
+      {/* Zero-Touch Integration Status */}
+      <div className="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-xl p-4 rounded-3xl border border-primary/5 shadow-sm">
+        <div className="flex items-center justify-between mb-2 text-primary">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Entegrasyon Durumu</span>
+          <span className="text-[9px] font-bold text-muted-foreground uppercase italic underline cursor-pointer">Ayarları Yönet</span>
+        </div>
+        <AutomationStatus />
+      </div>
+
       {/* Date Navigation & Sync */}
-      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl p-3 rounded-[2rem] border border-primary/5 shadow-2xl overflow-hidden relative">
-        {/* Decorator Gradient */}
-        <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
+      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-3xl p-3 rounded-[2rem] border border-primary/5 shadow-2xl overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-primary/10 to-transparent pointer-events-none" />
 
         {/* Left: Quick Actions / Status */}
         <div className="flex items-center gap-3 pl-4 z-10">
           <SyncButton />
           <div className="h-10 w-px bg-primary/10 hidden md:block" />
           <div className="hidden lg:flex flex-col">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Bulut Durumu</span>
-            <span className="text-[9px] font-bold text-muted-foreground uppercase">Eşitleme Aktif</span>
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Bulut Depolama</span>
+            <span className="text-[9px] font-bold text-green-600 uppercase">Güvende</span>
           </div>
         </div>
 
-        {/* Center: Main Date Navigator (The "Floating" Pill) */}
+        {/* Center: Main Date Navigator */}
         <div className="flex items-center justify-center z-10">
-          <div className="flex items-center gap-2 bg-background/60 backdrop-blur-md rounded-2xl p-1.5 border border-primary/10 shadow-lg group hover:border-primary/30 transition-all duration-500">
+          <div className="flex items-center gap-2 bg-background/80 backdrop-blur-md rounded-2xl p-1.5 border border-primary/10 shadow-lg group hover:border-primary/30 transition-all duration-500">
             <Button variant="ghost" size="icon" onClick={() => changeDate(-1)} className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
               <ChevronLeft className="h-6 w-6" />
             </Button>
@@ -186,7 +185,6 @@ export default function DashboardPage() {
 
         {/* Right: Closing Actions */}
         <div className="flex items-center justify-end gap-3 pr-4 z-10">
-          <div className="h-10 w-px bg-primary/10 hidden md:block mx-2" />
           <DayClosingDialog record={currentRecord} onConfirm={handleSave} />
         </div>
       </div>
@@ -194,26 +192,36 @@ export default function DashboardPage() {
       <DateRibbon selectedDate={date} onDateSelect={setDate} />
 
       {currentRecord.isClosed && (
-
         <div className="bg-slate-500/10 border-2 border-dashed border-slate-300 p-4 rounded-xl flex items-center justify-center gap-3 text-slate-600 animate-in fade-in zoom-in duration-500">
           <Lock className="h-6 w-6" />
           <span className="font-black italic tracking-wider uppercase">BU GÜN KAPATILDI VE VERİLER KİLİTLENDİ</span>
         </div>
       )}
 
+      {/* Online Integration Highlight */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Automated Summary cards can be placed here later */}
+      </div>
+
       {/* KPIs */}
       <SummaryCards record={currentRecord} />
 
-      {/* Data Entry Form in Accordion */}
-      <Accordion type="single" collapsible defaultValue="entry" className="w-full">
-        <AccordionItem value="entry" className="border-none bg-card/50 backdrop-blur-sm rounded-xl px-6 py-2 shadow-sm">
-          <AccordionTrigger className="hover:no-underline py-4">
-            <div className="flex items-center gap-2 text-primary font-bold">
-              <History className="h-5 w-5" />
-              <span>Veri Girişi / Detaylar</span>
+      {/* Emergency Fallback Data Entry */}
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="entry" className="border-none bg-slate-100/50 dark:bg-zinc-900/50 backdrop-blur-sm rounded-2xl px-6 py-2 shadow-sm border border-slate-200 dark:border-zinc-800">
+          <AccordionTrigger className="hover:no-underline py-4 opacity-50 hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2 text-slate-500 font-bold text-sm">
+              <History className="h-4 w-4" />
+              <span className="uppercase tracking-widest">Manuel Veri Girişi (Acil Durum / Fallback)</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="pt-4 pb-6">
+            <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex items-center gap-3 mb-6">
+              <AlertCircle className="h-5 w-5 text-amber-600" />
+              <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">
+                Sistem otomatik veri girişlerini önceliklendirir. Lütfen manuel girişi sadece entegrasyon hatalarında kullanın.
+              </p>
+            </div>
             <CompactForm
               key={currentRecord.date}
               initialData={currentRecord}
@@ -221,11 +229,8 @@ export default function DashboardPage() {
               disabled={currentRecord.isClosed}
             />
           </AccordionContent>
-
         </AccordionItem>
       </Accordion>
-
-      {/* Quick View or other sections can go here */}
     </div>
   );
 }

@@ -8,22 +8,20 @@ import { cn } from "@/lib/utils";
 
 export function LivePulse() {
     const { records } = useStore();
-    const [todayRecord, setTodayRecord] = useState<any>(null);
     const [pulse, setPulse] = useState(false);
 
-    useEffect(() => {
-        // Bugünü bul
-        const todayStr = new Date().toISOString().split('T')[0];
-        const record = records.find(r => r.date === todayStr);
+    // Bugünü deriye et (derived state)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayRecord = records.find(r => r.date === todayStr);
 
-        if (record) {
-            setTodayRecord(record);
+    useEffect(() => {
+        if (todayRecord) {
             // Veri değiştiğinde efekt ver
             setPulse(true);
             const t = setTimeout(() => setPulse(false), 1000);
             return () => clearTimeout(t);
         }
-    }, [records]);
+    }, [todayRecord]);
 
     if (!todayRecord) return null; // Bugün veri yoksa gösterme veya boş göster
 

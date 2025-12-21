@@ -8,6 +8,7 @@ Modern, güvenli ve akıllı işletme yönetim sistemi. Günlük ciro takibi, st
 - 💸 **Gider Yönetimi** - Tüm giderlerinizi kategorize edin ve analiz edin
 - 📒 **Veresiye Defteri** - Müşteri borçlarını takip edin, vadesi gelenleri görün
 - 📦 **Stok Takibi** - Kritik malzemelerin durumunu izleyin
+- 🤖 **Zero-Touch Otomasyon** - POS Z-Raporları e-posta ile otomatik okunur, Yemeksepeti/Getir siparişleri anlık işlenir.
 - 📊 **Detaylı Raporlar** - Haftalık/aylık kar-zarar analizleri
 - 🌙 **Modern Arayüz** - Karanlık/aydınlık tema desteği
 - ☁️ **Bulut Senkronizasyonu** - Verileriniz güvende, her yerden erişin

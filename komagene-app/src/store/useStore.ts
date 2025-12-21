@@ -80,7 +80,7 @@ export const useStore = create<AppState>()(
                 if (!ledger) return;
 
                 // Find or create the target date's record
-                let targetRecord = state.records.find(r => r.date === targetDate);
+                const targetRecord = state.records.find(r => r.date === targetDate);
 
                 if (targetRecord) {
                     // Add ledger amount to cash income
@@ -105,7 +105,8 @@ export const useStore = create<AppState>()(
                         income: {
                             cash: ledger.amount,
                             creditCard: 0,
-                            online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 }
+                            online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 },
+                            source: 'manual'
                         },
                         expenses: [],
                         ledgers: [],

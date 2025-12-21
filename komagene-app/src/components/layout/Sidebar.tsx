@@ -16,6 +16,12 @@ const routes = [
         color: "text-sky-500",
     },
     {
+        label: "Ürün Kataloğu",
+        icon: Package,
+        href: "/menu",
+        color: "text-orange-500",
+    },
+    {
         label: "Raporlar",
         icon: BarChart3,
         href: "/reports",
@@ -36,7 +42,7 @@ const routes = [
     {
         label: "Dijital Menü",
         icon: Menu,
-        href: "/admin/products",
+        href: "/signage/merkez", // Updated to signage base
         color: "text-red-500",
     },
 ];

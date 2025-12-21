@@ -1,5 +1,4 @@
 import { DailyRecord } from "@/types";
-import { differenceInDays, parseISO, subDays } from "date-fns";
 
 export interface AnomalyAlert {
     id: string;
