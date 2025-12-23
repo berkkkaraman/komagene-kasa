@@ -1,5 +1,5 @@
 -- ==========================================
--- GÜNKASA MASTER INITIALIZATION SCRIPT (V1)
+-- GÜNKASA MASTER INITIALIZATION SCRIPT (V1.1 - IDEMPOTENT)
 -- 10-Agent Hive Mind Protocol
 -- ==========================================
 
@@ -120,20 +120,49 @@ ALTER TABLE public.records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.z_reports ENABLE ROW LEVEL SECURITY;
 
--- Politikalar
-CREATE POLICY "Branches_Read" ON public.branches FOR SELECT USING (true);
+-- Politikalar (Idempotent - Zaten varsa hata vermez)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Branches_Read' AND tablename = 'branches') THEN
+        CREATE POLICY "Branches_Read" ON public.branches FOR SELECT USING (true);
+    END IF;
 
-CREATE POLICY "Profiles_Read_All" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Profiles_Update_Own" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Profiles_Read_All' AND tablename = 'profiles') THEN
+        CREATE POLICY "Profiles_Read_All" ON public.profiles FOR SELECT USING (true);
+    END IF;
 
-CREATE POLICY "Categories_Read" ON public.categories FOR SELECT USING (true);
-CREATE POLICY "Products_Read" ON public.products FOR SELECT USING (true);
-CREATE POLICY "Variants_Read" ON public.product_variants FOR SELECT USING (true);
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Profiles_Update_Own' AND tablename = 'profiles') THEN
+        CREATE POLICY "Profiles_Update_Own" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+    END IF;
 
-CREATE POLICY "Records_Manage" ON public.records FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Orders_Public_Insert" ON public.orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Orders_Staff_Manage" ON public.orders FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "ZReports_Staff_Manage" ON public.z_reports FOR ALL USING (auth.role() = 'authenticated');
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Categories_Read' AND tablename = 'categories') THEN
+        CREATE POLICY "Categories_Read" ON public.categories FOR SELECT USING (true);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Products_Read' AND tablename = 'products') THEN
+        CREATE POLICY "Products_Read" ON public.products FOR SELECT USING (true);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Variants_Read' AND tablename = 'product_variants') THEN
+        CREATE POLICY "Variants_Read" ON public.product_variants FOR SELECT USING (true);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Records_Manage' AND tablename = 'records') THEN
+        CREATE POLICY "Records_Manage" ON public.records FOR ALL USING (auth.role() = 'authenticated');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Orders_Public_Insert' AND tablename = 'orders') THEN
+        CREATE POLICY "Orders_Public_Insert" ON public.orders FOR INSERT WITH CHECK (true);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Orders_Staff_Manage' AND tablename = 'orders') THEN
+        CREATE POLICY "Orders_Staff_Manage" ON public.orders FOR ALL USING (auth.role() = 'authenticated');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'ZReports_Staff_Manage' AND tablename = 'z_reports') THEN
+        CREATE POLICY "ZReports_Staff_Manage" ON public.z_reports FOR ALL USING (auth.role() = 'authenticated');
+    END IF;
+END $$;
 
 -- 3. ADIM: REALTIME CONFIGURATION
 
@@ -147,27 +176,19 @@ BEGIN
     -- 2. Tabloları tek tek ve güvenli bir şekilde ekle (Hata fırlatmaz)
     BEGIN
         ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
-    EXCEPTION WHEN duplicate_object THEN
-        NULL;
-    END;
+    EXCEPTION WHEN duplicate_object THEN NULL; END;
 
     BEGIN
         ALTER PUBLICATION supabase_realtime ADD TABLE public.records;
-    EXCEPTION WHEN duplicate_object THEN
-        NULL;
-    END;
+    EXCEPTION WHEN duplicate_object THEN NULL; END;
 
     BEGIN
         ALTER PUBLICATION supabase_realtime ADD TABLE public.products;
-    EXCEPTION WHEN duplicate_object THEN
-        NULL;
-    END;
+    EXCEPTION WHEN duplicate_object THEN NULL; END;
 
     BEGIN
         ALTER PUBLICATION supabase_realtime ADD TABLE public.z_reports;
-    EXCEPTION WHEN duplicate_object THEN
-        NULL;
-  END;
+    EXCEPTION WHEN duplicate_object THEN NULL; END;
 END $$;
 
 -- 4. ADIM: VARSAYILAN VERİLER VE ADMIN YETKİSİ
@@ -182,8 +203,7 @@ BEGIN
     ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
     RETURNING id INTO m_branch_id;
 
-    -- 2. Admin Profilini Tanımla (Eğer kullanıcı auth.users'da varsa çalışır)
-    -- Not: auth.uid() e2c92dc8-9ef4-4d5d-a432-9e9dc9cb6a50 ise
+    -- 2. Admin Profilini Tanımla (Gerekirse açılabilir)
     -- INSERT INTO public.profiles (id, email, branch_id, role, full_name)
     -- VALUES ('e2c92dc8-9ef4-4d5d-a432-9e9dc9cb6a50', 'berkaykrmn3@gmail.com', m_branch_id, 'admin', 'Berkay Karaman')
     -- ON CONFLICT (id) DO UPDATE SET branch_id = m_branch_id, role = 'admin';
