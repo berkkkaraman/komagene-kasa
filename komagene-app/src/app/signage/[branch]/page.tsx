@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Product } from "@/types";
+import { Product, Branch } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MenuManager } from "@/components/calculator/MenuManager";
 import { Button } from "@/components/ui/button";
@@ -12,52 +12,76 @@ import { ProductCalculator } from "@/components/calculator/ProductCalculator";
 
 export default function SignagePage() {
     const params = useParams();
-    const branchId = params.branch as string;
+    const branchSlug = params.branch as string;
     const [products, setProducts] = useState<Product[]>([]);
+    const [branch, setBranch] = useState<Branch | null>(null);
     const [loading, setLoading] = useState(true);
     const [isEditMode, setIsEditMode] = useState(false);
 
     useEffect(() => {
-        if (!branchId) return;
-        loadProducts();
+        if (!branchSlug) return;
+        loadBranchAndProducts();
+    }, [branchSlug]);
 
-        const channel = supabase
-            .channel(`public_signage_${branchId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'products',
-                    filter: `branch_id=eq.${branchId}`
-                },
-                () => {
-                    loadProducts();
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [branchId]);
-
-    const loadProducts = async () => {
+    const loadBranchAndProducts = async () => {
         try {
-            const { data, error } = await supabase
-                .from('products')
+            // First, get branch info by slug
+            const { data: branchData } = await supabase
+                .from('branches')
                 .select('*')
-                .eq('branch_id', branchId)
-                .eq('is_active', true)
-                .order('category_id', { ascending: true })
-                .order('price', { ascending: true });
+                .eq('slug', branchSlug)
+                .single();
 
-            if (data) setProducts(data as Product[]);
+            if (branchData) {
+                setBranch(branchData as Branch);
+
+                // Then load products for this branch
+                const { data: productData } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('branch_id', branchData.id)
+                    .eq('is_active', true)
+                    .order('category_id', { ascending: true })
+                    .order('price', { ascending: true });
+
+                if (productData) setProducts(productData as Product[]);
+
+                // Subscribe to realtime updates for this branch's products
+                const channel = supabase
+                    .channel(`public_signage_${branchData.id}`)
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: '*',
+                            schema: 'public',
+                            table: 'products',
+                            filter: `branch_id=eq.${branchData.id}`
+                        },
+                        () => loadProducts(branchData.id)
+                    )
+                    .subscribe();
+
+                return () => {
+                    supabase.removeChannel(channel);
+                };
+            }
         } catch (e) {
             console.error(e);
         } finally {
             setLoading(false);
         }
+    };
+
+    const loadProducts = async (branchId: string) => {
+        const { data } = await supabase
+            .from('products')
+            .select('*')
+            .eq('branch_id', branchId)
+            .eq('is_active', true)
+            .order('category_id', { ascending: true })
+            .order('price', { ascending: true });
+
+        if (data) setProducts(data as Product[]);
     };
 
     const grouped = products.reduce((acc, product) => {
@@ -67,7 +91,10 @@ export default function SignagePage() {
         return acc;
     }, {} as Record<string, Product[]>);
 
-    const ticker = "KOMAGENE • Taze Lezzetler • Gerçek Lezzet • %100 Doğal • Hijyenik Üretim • Afiyet Olsun!";
+    // Dynamic ticker from branch settings or default
+    const ticker = branch?.ticker_message || "GÜNKASA • Lezzet & Hız • Afiyet Olsun! • Kalite Standartlarında Hizmet";
+    const businessName = branch?.name || "GÜNKASA";
+    const tagline = branch?.tagline || "Dijital Menü & POS";
 
     if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-primary text-4xl animate-pulse font-black italic">YÜKLENİYOR...</div>;
 
@@ -76,10 +103,10 @@ export default function SignagePage() {
             {/* Header */}
             <div className="bg-primary px-10 py-6 flex justify-between items-center shadow-2xl z-20 relative border-b border-primary/20">
                 <div className="flex items-center gap-6">
-                    <h1 className="text-6xl font-black tracking-tighter uppercase italic text-primary-foreground drop-shadow-lg">KOMAGENE</h1>
+                    <h1 className="text-6xl font-black tracking-tighter uppercase italic text-primary-foreground drop-shadow-lg">{businessName}</h1>
                     <div className="h-10 w-1 bg-white/20 rounded-full" />
                     <div className="text-xl font-black bg-white/10 px-6 py-2 rounded-2xl backdrop-blur-md text-white border border-white/10 uppercase italic">
-                        Lezzet & Hız Merkezi
+                        {tagline}
                     </div>
                 </div>
 
@@ -156,9 +183,9 @@ export default function SignagePage() {
                 <div className="fixed inset-0 z-[100] p-12 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="w-full max-w-5xl mx-auto h-full overflow-hidden">
                         <MenuManager
-                            branchId={branchId}
+                            branchId={branch?.id || ''}
                             products={products}
-                            onRefresh={loadProducts}
+                            onRefresh={() => branch?.id && loadProducts(branch.id)}
                             onClose={() => setIsEditMode(false)}
                         />
                     </div>

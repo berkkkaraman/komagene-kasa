@@ -27,6 +27,7 @@ const executeMigration = async () => {
 
         // Çalıştırılacak dosyalar
         const files = [
+            'MASTER_INITIALIZATION_V1.sql',
             'orders_schema.sql',
             'security_hardening.sql',
             'automation_schema.sql'

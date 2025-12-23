@@ -1,236 +1,137 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { tr } from "date-fns/locale";
-import { useStore } from "@/store/useStore";
-import { DailyRecord } from "@/types";
-import { SummaryCards } from "@/components/dashboard/SummaryCards";
-import { CompactForm } from "@/components/dashboard/CompactForm";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronLeft, ChevronRight, History, Lock, AlertCircle } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { SyncButton } from "@/components/SyncButton";
-import { AnomalyAlerts } from "@/components/dashboard/AnomalyAlerts";
-import { LivePulse } from "@/components/dashboard/LivePulse";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { DayClosingDialog } from "@/components/dashboard/DayClosingDialog";
-import { DateRibbon } from "@/components/dashboard/DateRibbon";
-import { supabase } from "@/lib/supabase";
-import { AutomationStatus } from "@/components/dashboard/AutomationStatus";
-import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, BarChart3, Zap, Shield, Smartphone, Store, Users } from "lucide-react";
 
-const AUTHORIZED_EMAILS = [
-  "berkkkaraman@gmail.com",
-  "berkaykrmn3@gmail.com",
-  "bunyaminserttas828@gmail.com",
-  "halatmuhammetalper@gmail.com"
+const FEATURES = [
+  {
+    icon: Zap,
+    title: "Hızlı Satış",
+    description: "POS sistemiyle saniyeler içinde sipariş alın"
+  },
+  {
+    icon: BarChart3,
+    title: "Anlık Raporlar",
+    description: "Gelir-gider takibi ve detaylı analizler"
+  },
+  {
+    icon: Smartphone,
+    title: "QR Menü",
+    description: "Müşteriler masadan sipariş versin"
+  },
+  {
+    icon: Shield,
+    title: "Güvenli Bulut",
+    description: "Verileriniz şifreli ve yedekli"
+  },
+  {
+    icon: Store,
+    title: "Çoklu Şube",
+    description: "Tüm şubelerinizi tek panelden yönetin"
+  },
+  {
+    icon: Users,
+    title: "Ekip Yönetimi",
+    description: "Personel yetkileri ve vardiya takibi"
+  }
 ];
 
-export default function DashboardPage() {
-  const { user, loading, signOut } = useAuth();
-  const [date, setDate] = useState<Date>(new Date());
-  const { records, addRecord, updateRecord } = useStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted || loading) return null;
-
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <h2 className="text-2xl font-bold">Lütfen Giriş Yapın</h2>
-        <p className="text-muted-foreground text-center max-w-sm">
-          Şube verilerini yönetmek için Google hesabınızla giriş yapmanız gerekmektedir.
-        </p>
-        <Button
-          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })}
-          className="gap-2"
-        >
-          Google ile Giriş Yap
-        </Button>
-      </div>
-    );
-  }
-
-  const isAuthorized = AUTHORIZED_EMAILS.includes(user.email || "");
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success("Başarıyla çıkış yapıldı.");
-      window.location.reload();
-    } catch (error) {
-      console.error("Çıkış hatası:", error);
-      toast.error("Çıkış yapılırken bir hata oluştu. Tekrar deneyin.");
-    }
-  };
-
-  if (!isAuthorized) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <h2 className="text-2xl font-bold text-destructive">Erişim Engellendi</h2>
-        <p className="text-muted-foreground text-center max-w-sm">
-          Bu hesaba (`{user.email}`) sistem erişim yetkisi verilmemiştir. Lütfen yetkili bir hesapla tekrar deneyin.
-        </p>
-        <Button variant="outline" onClick={handleSignOut} className="gap-2">
-          Güvenli Çıkış Yap
-        </Button>
-      </div>
-    );
-  }
-
-  const dateStr = format(date, "yyyy-MM-dd");
-  const currentRecord: DailyRecord = records.find(r => r.date === dateStr) || {
-    id: crypto.randomUUID(),
-    date: dateStr,
-    income: {
-      cash: 0, creditCard: 0,
-      online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 },
-      source: 'manual'
-    },
-    expenses: [],
-    ledgers: [],
-    inventory: [],
-    shift: { cashOnStart: 0, cashOnEnd: 0, difference: 0 },
-    note: "",
-    isSynced: false,
-    isClosed: false
-  };
-
-  const handleSave = (record: any) => {
-    const exists = records.some(r => r.date === record.date);
-    if (exists) {
-      updateRecord(record);
-    } else {
-      addRecord(record);
-    }
-  };
-
-  const changeDate = (days: number) => {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + days);
-    setDate(newDate);
-  };
-
+export default function LandingPage() {
   return (
-    <div className="space-y-6">
-      <AnomalyAlerts />
-      <LivePulse />
-
-      {/* Zero-Touch Integration Status */}
-      <div className="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-xl p-4 rounded-3xl border border-primary/5 shadow-sm">
-        <div className="flex items-center justify-between mb-2 text-primary">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Entegrasyon Durumu</span>
-          <span className="text-[9px] font-bold text-muted-foreground uppercase italic underline cursor-pointer">Ayarları Yönet</span>
-        </div>
-        <AutomationStatus />
-      </div>
-
-      {/* Date Navigation & Sync */}
-      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-3xl p-3 rounded-[2rem] border border-primary/5 shadow-2xl overflow-hidden relative">
-        <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-primary/10 to-transparent pointer-events-none" />
-
-        {/* Left: Quick Actions / Status */}
-        <div className="flex items-center gap-3 pl-4 z-10">
-          <SyncButton />
-          <div className="h-10 w-px bg-primary/10 hidden md:block" />
-          <div className="hidden lg:flex flex-col">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Bulut Depolama</span>
-            <span className="text-[9px] font-bold text-green-600 uppercase">Güvende</span>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="font-black text-2xl tracking-tighter uppercase italic">
+            GÜN<span className="text-primary not-italic">KASA</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/login">
+              <Button variant="ghost" className="font-bold">Giriş Yap</Button>
+            </Link>
+            <Link href="/register">
+              <Button className="font-bold rounded-xl">Ücretsiz Başla</Button>
+            </Link>
           </div>
         </div>
+      </nav>
 
-        {/* Center: Main Date Navigator */}
-        <div className="flex items-center justify-center z-10">
-          <div className="flex items-center gap-2 bg-background/80 backdrop-blur-md rounded-2xl p-1.5 border border-primary/10 shadow-lg group hover:border-primary/30 transition-all duration-500">
-            <Button variant="ghost" size="icon" onClick={() => changeDate(-1)} className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "min-w-[200px] justify-center text-center font-black text-xl tracking-tighter hover:bg-transparent px-4 group-hover:text-primary transition-colors",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-5 w-5 text-primary animate-pulse" />
-                  {format(date, "d MMMM yyyy", { locale: tr })}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 border-none shadow-[0_20px_50px_rgba(215,25,32,0.15)] rounded-3xl overflow-hidden" align="center">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(d) => d && setDate(d)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-
-            <Button variant="ghost" size="icon" onClick={() => changeDate(1)} className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
-              <ChevronRight className="h-6 w-6" />
-            </Button>
+      {/* Hero */}
+      <section className="pt-32 pb-20 px-6">
+        <div className="container mx-auto text-center max-w-4xl">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight mb-6">
+            İşletmenizi <span className="text-primary italic">Dijitalleştirin</span>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+            Restoran, kafe ve marketler için modern POS sistemi, dijital menü ve bulut tabanlı yönetim paneli.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/register">
+              <Button size="lg" className="h-14 px-8 text-lg font-bold rounded-2xl gap-2 shadow-xl shadow-primary/20">
+                Hemen Başla <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+            <Link href="/signage/demo">
+              <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-bold rounded-2xl">
+                Demo Menüyü Gör
+              </Button>
+            </Link>
           </div>
         </div>
+      </section>
 
-        {/* Right: Closing Actions */}
-        <div className="flex items-center justify-end gap-3 pr-4 z-10">
-          <DayClosingDialog record={currentRecord} onConfirm={handleSave} />
+      {/* Features */}
+      <section className="py-20 px-6 bg-secondary/20">
+        <div className="container mx-auto max-w-6xl">
+          <h2 className="text-3xl font-black text-center mb-12 tracking-tight">
+            Neden <span className="text-primary">Günkasa</span>?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURES.map((feature, i) => (
+              <Card key={i} className="border-none shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 rounded-2xl overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
-      <DateRibbon selectedDate={date} onDateSelect={setDate} />
-
-      {currentRecord.isClosed && (
-        <div className="bg-slate-500/10 border-2 border-dashed border-slate-300 p-4 rounded-xl flex items-center justify-center gap-3 text-slate-600 animate-in fade-in zoom-in duration-500">
-          <Lock className="h-6 w-6" />
-          <span className="font-black italic tracking-wider uppercase">BU GÜN KAPATILDI VE VERİLER KİLİTLENDİ</span>
+      {/* CTA */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto max-w-3xl text-center">
+          <h2 className="text-4xl font-black tracking-tight mb-6">
+            Dakikalar İçinde <span className="text-primary">Dijitale Geçin</span>
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            Kredi kartı gerekmez. Hemen ücretsiz hesap oluşturun ve işletmenizi yönetmeye başlayın.
+          </p>
+          <Link href="/register">
+            <Button size="lg" className="h-14 px-10 text-lg font-bold rounded-2xl shadow-xl shadow-primary/20">
+              Ücretsiz Kayıt Ol
+            </Button>
+          </Link>
         </div>
-      )}
+      </section>
 
-      {/* Online Integration Highlight */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Automated Summary cards can be placed here later */}
-      </div>
-
-      {/* KPIs */}
-      <SummaryCards record={currentRecord} />
-
-      {/* Emergency Fallback Data Entry */}
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="entry" className="border-none bg-slate-100/50 dark:bg-zinc-900/50 backdrop-blur-sm rounded-2xl px-6 py-2 shadow-sm border border-slate-200 dark:border-zinc-800">
-          <AccordionTrigger className="hover:no-underline py-4 opacity-50 hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-2 text-slate-500 font-bold text-sm">
-              <History className="h-4 w-4" />
-              <span className="uppercase tracking-widest">Manuel Veri Girişi (Acil Durum / Fallback)</span>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="pt-4 pb-6">
-            <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex items-center gap-3 mb-6">
-              <AlertCircle className="h-5 w-5 text-amber-600" />
-              <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">
-                Sistem otomatik veri girişlerini önceliklendirir. Lütfen manuel girişi sadece entegrasyon hatalarında kullanın.
-              </p>
-            </div>
-            <CompactForm
-              key={currentRecord.date}
-              initialData={currentRecord}
-              onSave={handleSave}
-              disabled={currentRecord.isClosed}
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      {/* Footer */}
+      <footer className="py-10 px-6 border-t bg-secondary/10">
+        <div className="container mx-auto text-center">
+          <p className="font-black text-xl tracking-tighter uppercase italic mb-2">
+            GÜN<span className="text-primary not-italic">KASA</span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            © 2024 Günkasa. Tüm hakları saklıdır.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

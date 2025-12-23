@@ -86,6 +86,10 @@ export default function LoginPage() {
                         >
                             {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Giriş Yap"}
                         </Button>
+                        <p className="text-sm text-center text-muted-foreground">
+                            Henüz hesabınız yok mu?{" "}
+                            <a href="/register" className="text-primary font-bold hover:underline">Ücretsiz Kayıt Olun</a>
+                        </p>
                         <p className="text-[10px] text-center text-muted-foreground uppercase tracking-tighter">
                             Ticari Kullanım Koşulları Geçerlidir &copy; 2024
                         </p>

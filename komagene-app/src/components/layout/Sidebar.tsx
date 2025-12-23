@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Archive, Settings, Menu, Package, Info, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Archive, Settings, Menu, Package, Info, BarChart3, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ const routes = [
     {
         label: "Panel",
         icon: LayoutDashboard,
-        href: "/",
+        href: "/admin",
         color: "text-sky-500",
     },
     {
@@ -28,7 +28,13 @@ const routes = [
         color: "text-emerald-500",
     },
     {
-        label: "Ayarlar",
+        label: "İşletme Ayarları",
+        icon: Building2,
+        href: "/business",
+        color: "text-purple-500",
+    },
+    {
+        label: "Sistem Ayarları",
         icon: Settings,
         href: "/settings",
         color: "text-gray-500",
@@ -36,7 +42,7 @@ const routes = [
     {
         label: "Dijital Menü",
         icon: Menu,
-        href: "/signage/merkez",
+        href: "/signage/demo",
         color: "text-red-500",
     },
 ];

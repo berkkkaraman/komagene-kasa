@@ -79,7 +79,7 @@ export default function OrderPage() {
         <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-slate-100 font-sans pb-32">
             {/* Header */}
             <div className="bg-white dark:bg-zinc-900 px-6 py-8 shadow-sm border-b">
-                <h1 className="text-2xl font-black italic text-primary uppercase tracking-tighter">KOMAGENE</h1>
+                <h1 className="text-2xl font-black italic text-primary uppercase tracking-tighter">GÜN<span className="not-italic">KASA</span></h1>
                 <p className="text-sm font-bold text-slate-500 mt-1">{tableId} • Hoş Geldiniz</p>
             </div>
 

@@ -88,6 +88,24 @@ export interface UserProfile {
     branch_id: string;
 }
 
+// İşletme / Şube (SAAS Multi-Tenant)
+export interface Branch {
+    id: string;
+    name: string;
+    slug: string;
+    address?: string;
+    phone?: string;
+    logo_url?: string;
+    primary_color: string;
+    tagline: string;
+    sector: 'restaurant' | 'cafe' | 'market' | 'bakery' | 'other';
+    ticker_message: string;
+    is_active: boolean;
+    subscription_tier: 'free' | 'starter' | 'pro' | 'enterprise';
+    created_at?: string;
+    updated_at?: string;
+}
+
 export interface Category {
     id: string;
     name: string;

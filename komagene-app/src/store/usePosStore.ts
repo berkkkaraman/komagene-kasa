@@ -94,7 +94,7 @@ export const usePosStore = create<PosState>()(
             }
         }),
         {
-            name: 'komagene-pos-storage',
+            name: 'gunkasa-pos-storage',
             partialize: (state) => ({ basket: state.basket }), // Only persist basket
         }
     )

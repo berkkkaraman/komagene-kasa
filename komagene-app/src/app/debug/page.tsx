@@ -121,7 +121,7 @@ export default function DebugPage() {
             if (!branch) {
                 const { data: newBranch, error: createError } = await supabase
                     .from('branches')
-                    .insert({ name: 'Komagene Merkez', slug: 'merkez-sube' })
+                    .insert({ name: 'Demo Şube', slug: 'demo-sube' })
                     .select()
                     .single();
                 if (createError) throw createError;

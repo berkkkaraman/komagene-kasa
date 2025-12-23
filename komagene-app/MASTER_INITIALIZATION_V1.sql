@@ -8,14 +8,23 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. ADIM: TABLOLARIN OLUŞTURULMASI
 
--- A. Şubeler (Branches)
+-- A. Şubeler / İşletmeler (Branches)
 CREATE TABLE IF NOT EXISTS public.branches (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     address TEXT,
     phone TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    -- SAAS Customization Fields
+    logo_url TEXT,
+    primary_color TEXT DEFAULT '#D71920', -- Default Günkasa Red
+    tagline TEXT DEFAULT 'Lezzet & Hız',
+    sector TEXT DEFAULT 'restaurant', -- restaurant, cafe, market, etc.
+    ticker_message TEXT DEFAULT 'GÜNKASA • Lezzet & Hız • Afiyet Olsun!',
+    is_active BOOLEAN DEFAULT true,
+    subscription_tier TEXT DEFAULT 'free', -- free, starter, pro, enterprise
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- B. Profiller (Profiles)
@@ -199,7 +208,7 @@ DECLARE
 BEGIN
     -- 1. Merkez Şubeyi Oluştur
     INSERT INTO public.branches (name, slug) 
-    VALUES ('Komagene Merkez', 'merkez-sube') 
+    VALUES ('Demo Şube', 'demo-sube') 
     ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
     RETURNING id INTO m_branch_id;
 
