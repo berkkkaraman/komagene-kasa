@@ -10,9 +10,15 @@ export const useStore = create<AppState>()(
             settings: {
                 theme: 'system',
                 isLoggedIn: false,
+                brightness: 100,
             },
             isLoading: false,
             userProfile: null,
+
+            setBrightness: (brightness: number) =>
+                set((state) => ({
+                    settings: { ...state.settings, brightness },
+                })),
 
             addRecord: (record) =>
                 set((state) => ({

@@ -1,23 +1,9 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/components/auth/AuthProvider";
-import { NotificationProvider } from "@/components/NotificationProvider";
-import { CommandPalette } from "@/components/CommandPalette";
-import { RealtimeManager } from "@/components/RealtimeManager";
-import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
-import { AutoSyncManager } from "@/components/AutoSyncManager";
+import { BrightnessOverlay } from "@/components/providers/BrightnessOverlay";
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Günkasa - İşletme Yönetim Paneli",
-  description: "Modern, Güvenli ve Akıllı İşletme Yönetimi",
-};
+// ... existing imports
 
 export default function RootLayout({
   children,
@@ -26,12 +12,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" suppressHydrationWarning>
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#D71920" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      </head>
+      {/* ... head ... */}
       <body className={jakarta.className}>
         <ThemeProvider
           attribute="class"
@@ -40,6 +21,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <BrightnessOverlay />
             <div className="min-h-screen bg-background relative flex flex-col bg-[radial-gradient(circle_at_20%_20%,_var(--tw-gradient-stops))] from-primary/5 via-background to-background">
               <ServiceWorkerRegister />
               <RealtimeManager />

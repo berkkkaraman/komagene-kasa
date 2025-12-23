@@ -22,16 +22,10 @@ const routes = [
         color: "text-orange-500",
     },
     {
-        label: "Raporlar",
+        label: "Analizler",
         icon: BarChart3,
-        href: "/reports",
-        color: "text-emerald-500",
-    },
-    {
-        label: "Arşiv",
-        icon: Archive,
-        href: "/archive",
-        color: "text-violet-500",
+        href: "/analytics",
+        color: "text-indigo-500",
     },
     {
         label: "Ayarlar",

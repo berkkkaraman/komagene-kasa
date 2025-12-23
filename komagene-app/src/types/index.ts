@@ -17,6 +17,7 @@ export interface ZReport {
     id: string;
     branch_id: string;
     date: string;
+    receipt_no?: string; // Fiş No (Z No)
     raw_email_content?: string;
     total_amount: number;
     credit_card_total: number;
@@ -87,22 +88,45 @@ export interface UserProfile {
     branch_id: string;
 }
 
+export interface Category {
+    id: string;
+    name: string;
+    icon?: string;
+    sort_order: number;
+}
+
+export interface ProductVariant {
+    id: string;
+    product_id: string;
+    name: string;
+    price_adjustment: number;
+    is_multiple_choice: boolean;
+}
+
 export interface Product {
     id: string;
-    branch_id: string;
+    category_id?: string;
     name: string;
-    price: number;
-    category: string;
-    image_url?: string;
     description?: string;
+    price: number;
+    image_url?: string;
     is_active: boolean;
-    created_at?: string;
+    variants?: ProductVariant[];
+}
+
+export interface BasketItem {
+    product: Product;
+    quantity: number;
+    selectedVariants: ProductVariant[];
+    note?: string;
+    totalPrice: number;
 }
 
 // State Management için ek tipler
 export interface AppSettings {
     theme: 'light' | 'dark' | 'system';
     isLoggedIn: boolean;
+    brightness: number; // 50-100
 }
 
 export interface AppState {
@@ -119,6 +143,7 @@ export interface AppState {
     setRecords: (records: DailyRecord[]) => void;
 
     setTheme: (theme: AppSettings['theme']) => void;
+    setBrightness: (brightness: number) => void;
     login: () => void;
     logout: () => void;
     setUserProfile: (profile: UserProfile | null) => void;

@@ -37,35 +37,34 @@
   }
 
   .dark {
-    /* Neutral Charcoal/Obsidian Dark Theme */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Soft-Dark Mode (Zinc Palette) */
+    --background: 240 10% 3.9%; /* Zinc-950 */
+    --foreground: 240 5% 96%;   /* Zinc-100 */
 
-    --card: 240 10% 3.9%;
-    /* Unifying card and bg for a cleaner look */
-    --card-foreground: 0 0% 98%;
+    --card: 240 6% 10%;         /* Zinc-900 - Lighter than BG */
+    --card-foreground: 240 5% 96%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 240 6% 10%;
+    --popover-foreground: 240 5% 96%;
 
-    --primary: 358 79% 55%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 358 65% 48%;     /* Komagene Red (Matte) */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 240 5% 96%;
 
-    --muted: 240 3.7% 12%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 240 5% 96%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 346.8 77.2% 49.8%;
+    --border: 240 4% 16%;       /* Zinc-800 */
+    --input: 240 4% 16%;
+    --ring: 358 65% 48%;
   }
 
 }

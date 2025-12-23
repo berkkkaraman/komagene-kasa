@@ -6,12 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Download, Sun, AlertTriangle, User, LogOut } from "lucide-react";
+import { Trash2, Download, Sun, AlertTriangle, User, LogOut, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { Slider } from "@/components/ui/slider";
 
 export function SettingsView() {
-    const { setRecords } = useStore();
+    const { setRecords, settings, setBrightness } = useStore();
     const { theme, setTheme: setNextTheme } = useTheme();
     const { user, signOut } = useAuth();
 
@@ -91,6 +92,23 @@ export function SettingsView() {
                         <div className="flex items-center justify-between p-3 rounded-lg border bg-accent/50">
                             <Label>Sistem</Label>
                             <Button variant={theme === 'system' ? 'default' : 'ghost'} size="sm" onClick={() => setNextTheme('system')}>Seç</Button>
+                        </div>
+
+                        {/* Brightness Control */}
+                        <div className="pt-4 border-t space-y-3">
+                            <div className="flex items-center justify-between">
+                                <Label className="flex items-center gap-2">
+                                    <Moon className="h-4 w-4" /> Ekran Parlaklığı
+                                </Label>
+                                <span className="text-xs font-bold text-muted-foreground">%{settings?.brightness || 100}</span>
+                            </div>
+                            <Slider
+                                value={settings?.brightness || 100}
+                                min={50}
+                                max={100}
+                                step={5}
+                                onChange={(e) => setBrightness(Number(e.target.value))}
+                            />
                         </div>
                     </CardContent>
                 </Card>
