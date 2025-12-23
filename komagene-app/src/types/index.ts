@@ -106,6 +106,8 @@ export interface ProductVariant {
 export interface Product {
     id: string;
     category_id?: string;
+    category?: string;       // Legacy Support (Compatibility)
+    branch_id?: string;      // Legacy Support
     name: string;
     description?: string;
     price: number;

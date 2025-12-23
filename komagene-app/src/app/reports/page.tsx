@@ -14,14 +14,13 @@ import { TrendingUp, TrendingDown, Target, Zap, FileSpreadsheet, BarChart3, Rece
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import { useState } from "react";
-import { ArchiveView } from "@/components/archive/ArchiveView";
-
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { ArchiveView } from "@/components/archive/ArchiveView";
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
 
-export default function ReportsArchivePage() {
+function ReportsContent() {
     const { user, loading } = useAuth();
     const { records } = useStore();
     const searchParams = useSearchParams();
@@ -229,5 +228,13 @@ export default function ReportsArchivePage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function ReportsArchivePage() {
+    return (
+        <Suspense fallback={<div>Yükleniyor...</div>}>
+            <ReportsContent />
+        </Suspense>
     );
 }

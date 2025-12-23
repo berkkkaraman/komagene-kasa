@@ -115,8 +115,8 @@ export function MenuManager({ branchId, products, onRefresh, onClose }: MenuMana
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase opacity-60 tracking-wider">Kategori</Label>
                             <Input
-                                value={editingProduct?.category || ""}
-                                onChange={e => setEditingProduct(prev => ({ ...prev, category: e.target.value }))}
+                                value={editingProduct?.category_id || ""}
+                                onChange={e => setEditingProduct(prev => ({ ...prev, category_id: e.target.value }))}
                                 className="h-12 rounded-xl font-bold bg-background/50"
                                 placeholder="Örn: Dürümler"
                             />
@@ -143,7 +143,7 @@ export function MenuManager({ branchId, products, onRefresh, onClose }: MenuMana
                                 <div>
                                     <div className="font-black italic uppercase text-lg tracking-tight">{product.name}</div>
                                     <div className="text-xs font-bold text-muted-foreground uppercase flex gap-2">
-                                        <span>{product.category}</span>
+                                        <span>{product.category_id}</span>
                                         <span>•</span>
                                         <span className="text-primary">₺{product.price}</span>
                                     </div>

@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export default function MenuPage() {
     const { userProfile } = useStore();
-    const { setProducts, setSearchQuery } = usePosStore();
+    const { setProducts, setCategories, setSearchQuery } = usePosStore();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {

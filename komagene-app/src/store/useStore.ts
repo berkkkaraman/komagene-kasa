@@ -50,10 +50,6 @@ export const useStore = create<AppState>()(
                     settings: { ...state.settings, theme },
                 })),
 
-            setBrightness: (brightness) =>
-                set((state) => ({
-                    settings: { ...state.settings, brightness },
-                })),
 
             login: () =>
                 set((state) => ({

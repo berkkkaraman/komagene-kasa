@@ -49,7 +49,7 @@ export default function SignagePage() {
                 .select('*')
                 .eq('branch_id', branchId)
                 .eq('is_active', true)
-                .order('category', { ascending: true })
+                .order('category_id', { ascending: true })
                 .order('price', { ascending: true });
 
             if (data) setProducts(data as Product[]);
@@ -61,7 +61,7 @@ export default function SignagePage() {
     };
 
     const grouped = products.reduce((acc, product) => {
-        const cat = product.category || 'Diğer';
+        const cat = product.category_id || 'Diğer';
         if (!acc[cat]) acc[cat] = [];
         acc[cat].push(product);
         return acc;

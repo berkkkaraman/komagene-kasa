@@ -31,11 +31,11 @@ export default function OrderPage() {
         fetchProducts();
     }, [branchId]);
 
-    const categories = ["Hepsi", ...Array.from(new Set(products.map(p => p.category)))];
+    const categories: string[] = ["Hepsi", ...Array.from(new Set(products.map(p => p.category_id).filter(Boolean))) as string[]];
 
     const filteredProducts = activeCategory === "Hepsi"
         ? products
-        : products.filter(p => p.category === activeCategory);
+        : products.filter(p => p.category_id === activeCategory);
 
     const updateCart = (product: Product, delta: number) => {
         setCart(prev => {

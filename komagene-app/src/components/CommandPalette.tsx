@@ -71,7 +71,8 @@ export function CommandPalette() {
                 date: today,
                 income: {
                     cash: 0, creditCard: 0,
-                    online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 }
+                    online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 },
+                    source: 'manual'
                 },
                 expenses: [],
                 ledgers: [],
@@ -82,24 +83,14 @@ export function CommandPalette() {
                 isClosed: false
             };
             addRecord(record);
-            // Re-fetch logic or just push to existing array is handled by store but locally here we imply success
         }
 
-        // Since we can't easily modify the *just created* record without async store fetch,
-        // we operate on the assumption that store updates are synchronous enough for this demo
-        // OR we use the store's update action on the *existing* or *new* id.
-
-        // Actually simpler: Just construct the updated fields and call updateRecord if exists, or addRecord if not.
-        // For simplicity in this v1, let's just show a toast for now or basic logic.
-        // REAL LOGIC:
-
-        // We need to fetch the latest state from store to be safe, but local 'record' variable is from the render scoop.
-        // We will use a direct update helper from store if possible, or manual map.
+        const currentRecord = record!;
 
         if (parsedAction.type.startsWith("INCOME_")) {
             const incomeKey = parsedAction.type.replace("INCOME_", "").toLowerCase();
 
-            let newIncome = { ...record.income };
+            let newIncome = { ...currentRecord.income };
             if (incomeKey === "cash") newIncome.cash += parsedAction.amount;
             else if (incomeKey === "pos") newIncome.creditCard += parsedAction.amount;
             else if (incomeKey === "ys") newIncome.online.yemeksepeti += parsedAction.amount;
@@ -107,17 +98,16 @@ export function CommandPalette() {
             else if (incomeKey === "trendyol") newIncome.online.trendyol += parsedAction.amount;
             else if (incomeKey === "gelal") newIncome.online.gelal += parsedAction.amount;
 
-            useStore.getState().updateRecord({ ...record, income: newIncome });
+            useStore.getState().updateRecord({ ...currentRecord, income: newIncome });
             toast.success(`₺${parsedAction.amount} gelir eklendi!`, { description: "Bugünün kaydı güncellendi." });
         } else if (parsedAction.type === "EXPENSE") {
             const newExpense = {
                 id: crypto.randomUUID(),
                 amount: parsedAction.amount,
-                category: 'other',
+                category: 'other' as const,
                 description: 'Hızlı Gider (Cmd+K)'
             };
-            // @ts-ignore
-            useStore.getState().updateRecord({ ...record, expenses: [...record.expenses, newExpense] });
+            useStore.getState().updateRecord({ ...currentRecord, expenses: [...currentRecord.expenses, newExpense] });
             toast.info(`₺${parsedAction.amount} gider eklendi.`, { description: "Detayları panelden düzenleyebilirsiniz." });
         }
 
@@ -188,7 +178,7 @@ export function CommandPalette() {
                     </Command.Item>
 
                     <Command.Item
-                        onSelect={() => { router.push("/archive"); setOpen(false); }}
+                        onSelect={() => { router.push("/reports"); setOpen(false); }}
                         className="flex items-center gap-3 p-3 rounded-xl aria-selected:bg-zinc-100 dark:aria-selected:bg-zinc-800 cursor-pointer"
                     >
                         <BarChart3 className="w-5 h-5 opacity-50" />

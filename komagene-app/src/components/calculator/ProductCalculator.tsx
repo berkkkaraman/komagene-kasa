@@ -44,7 +44,7 @@ export function ProductCalculator({ products = [] }: ProductCalculatorProps) {
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                category: product.category,
+                category_id: product.category_id,
                 quantity: 1
             }];
         });
@@ -96,7 +96,7 @@ export function ProductCalculator({ products = [] }: ProductCalculatorProps) {
                             onClick={() => addToCart(product)}
                             className={cn(
                                 "h-28 rounded-[2rem] flex flex-col items-center justify-center gap-1 border-none transition-all hover:scale-105 active:scale-95 shadow-xl shadow-black/20 text-white",
-                                CATEGORY_COLORS[product.category] || CATEGORY_COLORS['Default']
+                                CATEGORY_COLORS[product.category_id] || CATEGORY_COLORS['Default']
                             )}
                         >
                             <span className="font-black italic text-base tracking-tighter uppercase line-clamp-2 px-4">{product.name}</span>
