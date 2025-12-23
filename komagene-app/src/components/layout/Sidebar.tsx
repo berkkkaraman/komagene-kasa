@@ -36,7 +36,7 @@ const routes = [
     {
         label: "Dijital Menü",
         icon: Menu,
-        href: "/signage/merkez", // Updated to signage base
+        href: "/signage/merkez",
         color: "text-red-500",
     },
 ];

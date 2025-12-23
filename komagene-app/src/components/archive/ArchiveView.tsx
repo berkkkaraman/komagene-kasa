@@ -389,7 +389,7 @@ export function ArchiveView() {
                                     <div className={cn(
                                         "p-6 sm:w-64 text-center shrink-0 transition-colors",
                                         row.net >= 0
-                                            ? "bg-sky-50 dark:bg-primary/10 text-sky-600 dark:text-primary"
+                                            ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
                                             : "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500"
                                     )}>
                                         <p className="text-[10px] font-black uppercase opacity-60 mb-1">Net Durum</p>
