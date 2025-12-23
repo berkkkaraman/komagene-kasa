@@ -10,4 +10,12 @@ if (isPlaceholder) {
     console.warn('Supabase: Uygulama placeholder modunda çalışıyor. Bulut eşitleme aktif olmayacaktır.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+        persistSession: true,
+        storageKey: 'gunkasa-auth',
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+    }
+});
