@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Download, Sun, AlertTriangle, User, LogOut, ShieldCheck, Database, Palette } from "lucide-react";
+import { Trash2, Download, Sun, AlertTriangle, User, LogOut, ShieldCheck, Database, Palette, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Switch } from "@/components/ui/switch";
@@ -148,6 +148,7 @@ export function SettingsView() {
                                 </Button>
                             ))}
                         </div>
+
                     </CardContent>
                 </Card>
 

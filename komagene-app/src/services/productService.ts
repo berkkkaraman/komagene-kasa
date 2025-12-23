@@ -1,13 +1,27 @@
 import { supabase } from "@/lib/supabase";
-import { Product } from "@/types";
+import { Product, Category } from "@/types";
 
 export const productService = {
+    async fetchCategories(branchId: string) {
+        const { data, error } = await supabase
+            .from('categories')
+            .select('*')
+            //.eq('branch_id', branchId) // Optional: common categories vs branched
+            .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+        return data as Category[];
+    },
+
     async fetchProducts(branchId: string) {
         const { data, error } = await supabase
             .from('products')
-            .select('*')
+            .select(`
+                *,
+                variants:product_variants(*)
+            `)
             .eq('branch_id', branchId)
-            .order('category', { ascending: true });
+            .eq('is_active', true);
 
         if (error) throw error;
         return data as Product[];

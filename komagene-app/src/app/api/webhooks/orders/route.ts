@@ -1,38 +1,57 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-export async function POST(request: Request) {
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export async function POST(req: Request) {
     try {
-        const body = await request.json();
-        const { branch_id, source, external_id, items, total_amount, table_no } = body;
+        const body = await req.json();
 
-        // 1. Veritabanına Yaz
+        // Beklenen Format:
+        // {
+        //   "source": "yemeksepeti",
+        //   "branch_id": "uuid...",
+        //   "order_id": "YS-12345", 
+        //   "items": [...],
+        //   "total": 150.50,
+        //   "customer_note": "Zili çalma"
+        // }
+
+        const { source, branch_id, order_id, items, total, customer_note, table_no } = body;
+
+        if (!source || !total) {
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        // Orders tablosuna ekle
         const { data, error } = await supabase
             .from('orders')
             .insert({
-                branch_id,
-                source: source || 'external_webhook',
-                external_id,
-                items,
-                total_amount,
-                table_no: table_no || 'ONLINE',
-                status: 'pending'
+                branch_id: branch_id, // Opsiyonel: Eğer extension branch_id biliyorsa
+                table_no: table_no || `Online: ${source.toUpperCase()}`, // "Masa 1" yerine "Online: YEMEKSEPETI"
+                items: items || [],
+                total_amount: total,
+                status: 'pending',
+                source: source, // 'yemeksepeti', 'getir' vb.
+                customer_note: customer_note
             })
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error('DB Insert Error:', error);
+            return NextResponse.json({ error: 'Database error', details: error.message }, { status: 500 });
+        }
 
-        // 2. Realtime Notification zaten Supabase tarafından (table triggers) halledilecek.
-        // Ama uygulama içinden bir toast tetiklemek için response döndürüyoruz.
-        return NextResponse.json({
-            success: true,
-            message: 'Order received and synchronized',
-            orderId: data.id
-        });
+        // Supabase Realtime otomatik tetiklenecek (INSERT event)
+        // Ekstra bir socket mesajına gerek yok (Postgres Changes)
 
-    } catch (err: any) {
-        console.error('Webhook Error:', err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: true, id: data.id });
+
+    } catch (error) {
+        console.error('Courier Webhook Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

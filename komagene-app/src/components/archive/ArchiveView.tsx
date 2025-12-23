@@ -282,6 +282,44 @@ export function ArchiveView() {
                 </CardContent>
             </Card>
 
+            {/* Income Distribution (Reports Merge) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-2 border-slate-200 dark:border-white/10 shadow-lg bg-white dark:bg-slate-900/40 backdrop-blur-xl overflow-hidden rounded-2xl">
+                    <CardHeader className="border-b-2 border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 py-4">
+                        <CardTitle className="text-xs font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                            <Wallet className="h-4 w-4" /> Gelir Kaynakları
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                        <div className="h-[250px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={[
+                                            { name: 'Nakit', value: totalGelir > 0 ? filteredData.reduce((s, r) => s + (r.income.cash || 0), 0) : 0, color: '#10b981' },
+                                            { name: 'Kredi Kartı', value: totalGelir > 0 ? filteredData.reduce((s, r) => s + (r.income.creditCard || 0), 0) : 0, color: '#3b82f6' },
+                                            { name: 'Online', value: totalGelir > 0 ? filteredData.reduce((s, r) => s + Object.values(r.income.online).reduce((a, b) => a + (b || 0), 0), 0) : 0, color: '#f59e0b' }
+                                        ].filter(d => d.value > 0)}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        <Cell fill="#10b981" />
+                                        <Cell fill="#3b82f6" />
+                                        <Cell fill="#f59e0b" />
+                                    </Pie>
+                                    <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
             {/* Expense Category Pie Chart */}
             {pieData.length > 0 && (
                 <Card className="border-2 border-slate-200 dark:border-white/10 shadow-lg bg-white dark:bg-slate-900/40 backdrop-blur-xl overflow-hidden rounded-2xl">
@@ -351,7 +389,7 @@ export function ArchiveView() {
                                     <div className={cn(
                                         "p-6 sm:w-64 text-center shrink-0 transition-colors",
                                         row.net >= 0
-                                            ? "bg-sky-50 dark:bg-primary/10 text-sky-600 dark:text-primary"
+                                            ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
                                             : "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500"
                                     )}>
                                         <p className="text-[10px] font-black uppercase opacity-60 mb-1">Net Durum</p>
