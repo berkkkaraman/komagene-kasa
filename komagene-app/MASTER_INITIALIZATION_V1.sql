@@ -139,12 +139,36 @@ CREATE POLICY "ZReports_Staff_Manage" ON public.z_reports FOR ALL USING (auth.ro
 
 DO $$
 BEGIN
+    -- 1. Yayını oluştur (Eğer yoksa)
     IF NOT EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
         CREATE PUBLICATION supabase_realtime;
     END IF;
-END $$;
 
-ALTER PUBLICATION supabase_realtime ADD TABLE public.orders, public.records, public.products, public.z_reports;
+    -- 2. Tabloları tek tek ve güvenli bir şekilde ekle (Hata fırlatmaz)
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+    EXCEPTION WHEN duplicate_object THEN
+        NULL;
+    END;
+
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.records;
+    EXCEPTION WHEN duplicate_object THEN
+        NULL;
+    END;
+
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.products;
+    EXCEPTION WHEN duplicate_object THEN
+        NULL;
+    END;
+
+    BEGIN
+        ALTER PUBLICATION supabase_realtime ADD TABLE public.z_reports;
+    EXCEPTION WHEN duplicate_object THEN
+        NULL;
+  END;
+END $$;
 
 -- 4. ADIM: VARSAYILAN VERİLER VE ADMIN YETKİSİ
 
