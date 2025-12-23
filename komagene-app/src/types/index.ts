@@ -103,6 +103,7 @@ export interface Product {
 export interface AppSettings {
     theme: 'light' | 'dark' | 'system';
     isLoggedIn: boolean;
+    brightness: number; // 40-100%
 }
 
 export interface AppState {
@@ -119,6 +120,7 @@ export interface AppState {
     setRecords: (records: DailyRecord[]) => void;
 
     setTheme: (theme: AppSettings['theme']) => void;
+    setBrightness: (brightness: number) => void;
     login: () => void;
     logout: () => void;
     setUserProfile: (profile: UserProfile | null) => void;

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 300px;
+            padding: 15px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            color: #D71920;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #D71920;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #b9151b;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 11px;
+            text-align: center;
+            color: #10b981;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">GÜN<span style="color: black; font-style: normal;">KASA</span> BRIDGE</div>
+    </div>
+
+    <div class="form-group">
+        <label>Şube ID (Branch GUID)</label>
+        <input type="text" id="branchId" placeholder="Debug sayfasından kopyalayın">
+    </div>
+
+    <div class="form-group">
+        <label>API URL (Opsiyonel)</label>
+        <input type="text" id="apiUrl" value="http://localhost:3000">
+    </div>
+
+    <button id="saveBtn">AYARLARI KAYDET</button>
+
+    <div id="status" class="status" style="display:none;">✅ Ayarlar Kaydedildi</div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

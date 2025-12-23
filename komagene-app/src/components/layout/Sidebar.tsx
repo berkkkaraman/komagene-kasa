@@ -28,12 +28,6 @@ const routes = [
         color: "text-emerald-500",
     },
     {
-        label: "Arşiv",
-        icon: Archive,
-        href: "/archive",
-        color: "text-violet-500",
-    },
-    {
         label: "Ayarlar",
         icon: Settings,
         href: "/settings",

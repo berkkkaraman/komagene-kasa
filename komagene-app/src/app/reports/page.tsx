@@ -1,31 +1,39 @@
 "use client";
 
 import { useStore } from "@/store/useStore";
-import { format, subDays, parseISO } from "date-fns";
+import { format, subDays, parseISO, startOfWeek, startOfMonth } from "date-fns";
 import { tr } from "date-fns/locale";
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell, Legend, BarChart, Bar
+    PieChart, Pie, Cell, Legend
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Target, Zap } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Zap, FileSpreadsheet, BarChart3, Receipt, CircleDollarSign, Coins } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { useState } from "react";
+import { ArchiveView } from "@/components/archive/ArchiveView";
+
+import { useSearchParams } from "next/navigation";
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
 
-export default function ReportsPage() {
+export default function ReportsArchivePage() {
     const { user, loading } = useAuth();
     const { records } = useStore();
+    const searchParams = useSearchParams();
+    const initialTab = searchParams.get('tab') as 'analytics' | 'history' || 'analytics';
+    const [activeTab, setActiveTab] = useState<'analytics' | 'history'>(initialTab);
 
     if (loading) return null;
 
     if (!user) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <h2 className="text-2xl font-bold">Raporlar İçin Giriş Yapın</h2>
+                <h2 className="text-2xl font-bold">Erişim İçin Giriş Yapın</h2>
                 <Button onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}>
                     Google ile Giriş Yap
                 </Button>
@@ -70,240 +78,156 @@ export default function ReportsPage() {
         { name: 'Online', value: records.reduce((s, r) => s + Object.values(r.income.online).reduce((a, b) => a + (b || 0), 0), 0) },
     ].filter(d => d.value > 0);
 
-    const platformData = [
-        { name: 'Yemeksepeti', value: records.reduce((s, r) => s + (r.income.online.yemeksepeti || 0), 0) },
-        { name: 'Getir', value: records.reduce((s, r) => s + (r.income.online.getir || 0), 0) },
-        { name: 'Trendyol', value: records.reduce((s, r) => s + (r.income.online.trendyol || 0), 0) },
-        { name: 'Gelal', value: records.reduce((s, r) => s + (r.income.online.gelal || 0), 0) },
-    ].filter(d => d.value > 0);
-
-    const expenseCategories = {
-        supplier: 'Malzeme Alımı',
-        staff: 'Personel Maaş',
-        bills: 'Kira - Fatura',
-        tax: 'Vergi & Muhasebe',
-        other: 'Diğer'
-    };
-
-    const categoryDataMap: Record<string, number> = {};
-    records.forEach(r => {
-        r.expenses.forEach(e => {
-            const label = expenseCategories[e.category as keyof typeof expenseCategories] || 'Diğer';
-            categoryDataMap[label] = (categoryDataMap[label] || 0) + (e.amount || 0);
-        });
-    });
-
-    const expensePieData = Object.entries(categoryDataMap)
-        .map(([name, value]) => ({ name, value }))
-        .filter(d => d.value > 0)
-        .sort((a, b) => b.value - a.value);
-
-    const EXPENSE_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#06b6d4'];
-
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-4xl font-black tracking-tight text-primary uppercase italic">Performans Raporu</h2>
-                    <p className="text-muted-foreground font-medium">İşletmenizin finansal durum analizi ve trendler.</p>
+        <div className="space-y-8 pb-20 animate-in fade-in duration-700">
+            {/* Header section with tab switcher */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="space-y-1">
+                    <h2 className="text-4xl font-black tracking-tighter text-foreground uppercase italic leading-none">
+                        Analitik <span className="text-primary not-italic">&</span> Arşiv
+                    </h2>
+                    <p className="text-muted-foreground font-medium uppercase text-[10px] tracking-widest opacity-70">
+                        İşletme performansı ve veri kütüphanesi
+                    </p>
+                </div>
+
+                <div className="bg-secondary/50 p-1 rounded-2xl border border-border/50 backdrop-blur-sm">
+                    <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)}>
+                        <TabsList className="bg-transparent h-11 gap-1">
+                            <TabsTrigger value="analytics" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-tight transition-all">
+                                <BarChart3 className="w-4 h-4 mr-2" /> Görsel Rapor
+                            </TabsTrigger>
+                            <TabsTrigger value="history" className="rounded-xl px-6 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-tight transition-all">
+                                <FileSpreadsheet className="w-4 h-4 mr-2" /> Kayıt Arşivi
+                            </TabsTrigger>
+                        </TabsList>
+                    </Tabs>
                 </div>
             </div>
 
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card className="border-none shadow-lg bg-emerald-600 text-white">
-                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                        <CardTitle className="text-xs font-bold uppercase opacity-80">Toplam Ciro</CardTitle>
-                        <TrendingUp className="h-4 w-4" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black">₺{totalIncome.toLocaleString('tr-TR')}</div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-lg bg-rose-600 text-white">
-                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                        <CardTitle className="text-xs font-bold uppercase opacity-80">Toplam Gider</CardTitle>
-                        <TrendingDown className="h-4 w-4" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black">₺{totalExpense.toLocaleString('tr-TR')}</div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-lg bg-sky-600 text-white">
-                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                        <CardTitle className="text-xs font-bold uppercase opacity-80">Net Kar/Zarar</CardTitle>
-                        <Target className="h-4 w-4" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black">₺{(totalIncome - totalExpense).toLocaleString('tr-TR')}</div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-lg bg-primary text-primary-foreground">
-                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                        <CardTitle className="text-xs font-bold uppercase opacity-80">Kayıtlı Gün</CardTitle>
-                        <Zap className="h-4 w-4" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-black">{records.length}</div>
-                    </CardContent>
-                </Card>
-            </div>
+            {activeTab === 'analytics' ? (
+                <div className="space-y-10">
+                    {/* Quick Stats Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <Card className="border-none bg-emerald-500/10 text-emerald-500 rounded-3xl overflow-hidden relative group">
+                            <CardContent className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-emerald-500/10 rounded-xl"><CircleDollarSign className="h-5 w-5" /></div>
+                                    <TrendingUp className="h-4 w-4 opacity-50" />
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-widest opacity-60">Toplam Ciro</div>
+                                <div className="text-2xl font-black italic">₺{totalIncome.toLocaleString('tr-TR')}</div>
+                            </CardContent>
+                        </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-2 border-none shadow-xl bg-card/50 backdrop-blur-md overflow-hidden">
-                    <CardHeader className="border-b border-white/10 bg-white/5 py-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-primary/10 rounded-2xl text-primary">
-                                <TrendingUp className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <CardTitle className="text-xl font-black uppercase italic tracking-tighter">GELİR & GİDER AKIŞI</CardTitle>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Son 14 günlük hareket grafiği</p>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                        <div className="h-[400px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={trendData}>
-                                    <defs>
-                                        <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                                        </linearGradient>
-                                        <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.15} />
-                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 10, fontWeight: 'bold' }} />
-                                    <YAxis axisLine={false} tickLine={false} tickFormatter={(v) => `₺${v}`} tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 10, fontWeight: 'bold' }} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '12px', border: '1px solid hsl(var(--border))', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                    />
-                                    <Area type="monotone" dataKey="Gelir" stroke="#10b981" strokeWidth={4} fillOpacity={1} fill="url(#colorIn)" />
-                                    <Area type="monotone" dataKey="Gider" stroke="#ef4444" strokeWidth={4} fillOpacity={1} fill="url(#colorOut)" />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
+                        <Card className="border-none bg-rose-500/10 text-rose-500 rounded-3xl overflow-hidden relative">
+                            <CardContent className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-rose-500/10 rounded-xl"><Receipt className="h-5 w-5" /></div>
+                                    <TrendingDown className="h-4 w-4 opacity-50" />
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-widest opacity-60">Toplam Gider</div>
+                                <div className="text-2xl font-black italic">₺{totalExpense.toLocaleString('tr-TR')}</div>
+                            </CardContent>
+                        </Card>
 
-                <Card className="border-none shadow-xl bg-card/50 backdrop-blur-md overflow-hidden">
-                    <CardHeader className="border-b border-white/10 bg-white/5 py-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
-                                <Target className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <CardTitle className="text-xl font-black uppercase italic tracking-tighter">GELİR KANALLARI</CardTitle>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Ödeme yöntemleri dağılımı</p>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={pieData}
-                                        innerRadius={70}
-                                        outerRadius={100}
-                                        paddingAngle={8}
-                                        dataKey="value"
-                                        stroke="none"
-                                    >
-                                        {pieData.map((_, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend verticalAlign="bottom" height={36} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div className="mt-6 pt-6 border-t border-dashed space-y-4">
-                            <h4 className="text-xs font-black uppercase tracking-widest opacity-40">Online Platformlar</h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                {platformData.map((p, i) => (
-                                    <div key={p.name} className="flex flex-col gap-1">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                                            <span className="text-[10px] font-bold uppercase opacity-60">{p.name}</span>
-                                        </div>
-                                        <span className="text-sm font-black">₺{p.value.toLocaleString('tr-TR')}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        <Card className="border-none bg-sky-500/10 text-sky-500 rounded-3xl overflow-hidden relative">
+                            <CardContent className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-sky-500/10 rounded-xl"><Coins className="h-5 w-5" /></div>
+                                    <Target className="h-4 w-4 opacity-50" />
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-widest opacity-60">Net Kar</div>
+                                <div className="text-2xl font-black italic">₺{(totalIncome - totalExpense).toLocaleString('tr-TR')}</div>
+                            </CardContent>
+                        </Card>
 
-                <Card className="lg:col-span-3 border-none shadow-xl bg-card/50 backdrop-blur-md overflow-hidden">
-                    <CardHeader className="border-b border-white/10 bg-rose-500/5 py-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-rose-500/10 rounded-2xl text-rose-500">
-                                <TrendingDown className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <CardTitle className="text-xl font-black uppercase italic tracking-tighter">GİDER ANALİZİ & DAĞILIMI</CardTitle>
-                                <p className="text-[10px] font-bold text-rose-500/50 uppercase tracking-widest opacity-60">Harcamaların kategorilere göre dökümü</p>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            <div className="lg:col-span-1 h-[250px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={expensePieData}
-                                            innerRadius={60}
-                                            outerRadius={85}
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                            stroke="none"
-                                        >
-                                            {expensePieData.map((_, index) => (
-                                                <Cell key={`cell-${index}`} fill={EXPENSE_COLORS[index % EXPENSE_COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
+                        <Card className="border-none bg-primary/10 text-primary rounded-3xl overflow-hidden relative">
+                            <CardContent className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-primary/10 rounded-xl"><Zap className="h-5 w-5" /></div>
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-widest opacity-60">Kayıtlı Gün</div>
+                                <div className="text-2xl font-black italic">{records.length} Gün</div>
+                            </CardContent>
+                        </Card>
+                    </div>
 
-                            <div className="lg:col-span-3">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full content-center">
-                                    {expensePieData.map((item, index) => (
-                                        <div key={item.name} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-4 h-4 rounded-full shadow-lg" style={{ backgroundColor: EXPENSE_COLORS[index % EXPENSE_COLORS.length] }} />
-                                                <div>
-                                                    <p className="text-[10px] font-black uppercase opacity-50 tracking-tighter">{item.name}</p>
-                                                    <p className="text-lg font-black italic">₺{item.value.toLocaleString('tr-TR')}</p>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <span className="text-xs font-black px-2 py-1 bg-white/10 rounded-lg opacity-60">
-                                                    %{((item.value / totalExpense) * 100).toFixed(1)}
-                                                </span>
-                                            </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <Card className="lg:col-span-2 border-none bg-secondary/30 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
+                            <CardHeader className="px-8 pt-8 pb-2">
+                                <CardTitle className="text-sm font-black uppercase tracking-widest opacity-40">Gelir & Gider Akışı</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-8">
+                                <div className="h-[350px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={trendData}>
+                                            <defs>
+                                                <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                                </linearGradient>
+                                                <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.05} />
+                                            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'currentColor', opacity: 0.4, fontSize: 10, fontWeight: 'bold' }} />
+                                            <YAxis axisLine={false} tickLine={false} tickFormatter={(v) => `₺${v}`} tick={{ fill: 'currentColor', opacity: 0.4, fontSize: 10, fontWeight: 'bold' }} />
+                                            <Tooltip
+                                                contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '24px', border: '1px solid hsl(var(--border))', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)' }}
+                                            />
+                                            <Area type="monotone" dataKey="Gelir" stroke="#10b981" strokeWidth={4} fillOpacity={1} fill="url(#colorIn)" />
+                                            <Area type="monotone" dataKey="Gider" stroke="#ef4444" strokeWidth={4} fillOpacity={1} fill="url(#colorOut)" />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-none bg-secondary/30 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
+                            <CardHeader className="px-8 pt-8 pb-2">
+                                <CardTitle className="text-sm font-black uppercase tracking-widest opacity-40">Tip Dağılımı</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-8 flex flex-col items-center justify-center">
+                                <div className="h-[250px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={pieData}
+                                                innerRadius={60}
+                                                outerRadius={90}
+                                                paddingAngle={8}
+                                                dataKey="value"
+                                                stroke="none"
+                                            >
+                                                {pieData.map((_, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                            <Legend verticalAlign="bottom" height={36} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="mt-8 grid grid-cols-2 gap-4 w-full">
+                                    {pieData.map((d, i) => (
+                                        <div key={d.name} className="bg-background/40 p-3 rounded-2xl border border-border/10">
+                                            <div className="text-[9px] font-black uppercase opacity-40">{d.name}</div>
+                                            <div className="text-sm font-black">₺{d.value.toLocaleString('tr-TR')}</div>
                                         </div>
                                     ))}
-                                    {expensePieData.length === 0 && (
-                                        <div className="col-span-full py-10 text-center opacity-40 font-bold uppercase italic tracking-widest">
-                                            Henüz gider verisi bulunamadı
-                                        </div>
-                                    )}
                                 </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            ) : (
+                <div className="animate-in slide-in-from-bottom-4 duration-500">
+                    <ArchiveView />
+                </div>
+            )}
         </div>
     );
 }
-

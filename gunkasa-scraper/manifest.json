@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "Günkasa Scraper",
+    "version": "1.0",
+    "description": "Yemeksepeti ve Getir siparişlerini otomatik senkronize eder.",
+    "permissions": [
+        "storage",
+        "activeTab",
+        "notifications"
+    ],
+    "host_permissions": [
+        "https://*.yemeksepeti.com/*",
+        "https://*.getir.com/*",
+        "https://*.getiryemek.com/*",
+        "http://localhost:3000/*"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*.yemeksepeti.com/*",
+                "https://*.getir.com/*",
+                "https://*.getiryemek.com/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ]
+}

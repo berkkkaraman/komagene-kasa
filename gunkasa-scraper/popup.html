@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Günkasa Scraper</title>
+  <style>
+    body {
+      width: 300px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 15px;
+      background: #09090b;
+      color: white;
+    }
+    h2 {
+      color: #D71920;
+      margin-top: 0;
+      font-style: italic;
+      letter-spacing: -1px;
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 5px;
+      color: #71717a;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      color: white;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      background: #D71920;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 11px;
+      text-align: center;
+      color: #22c55e;
+    }
+  </style>
+</head>
+<body>
+  <h2>KOMAGENE SCRA</h2>
+  <div class="field">
+    <label>Şube ID (Branch ID)</label>
+    <input type="text" id="branchId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+  </div>
+  <div class="field">
+    <label>Server URL</label>
+    <input type="text" id="apiUrl" value="http://localhost:3000">
+  </div>
+  <button id="save">Ayarları Kaydet</button>
+  <div id="status" class="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

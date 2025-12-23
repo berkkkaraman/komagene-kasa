@@ -1,0 +1,37 @@
+{
+    "manifest_version": 3,
+    "name": "Günkasa Bridge",
+    "version": "1.0",
+    "description": "Yemeksepeti siparişlerini tek tıkla Günkasa'ya aktarın.",
+    "permissions": [
+        "storage"
+    ],
+    "host_permissions": [
+        "https://*.yemeksepeti.com/*",
+        "http://localhost:3000/*",
+        "https://*.vercel.app/*"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*.yemeksepeti.com/portal/*",
+                "https://*.yemeksepeti.com/orders/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "inject.css"
+            ]
+        }
+    ],
+    "icons": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    }
+}

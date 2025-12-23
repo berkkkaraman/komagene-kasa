@@ -1,0 +1,10 @@
+#gunkasa-bridge-panel div:hover {
+    transform: scale(1.05);
+    background: #b9151b ! stroke;
+    transition: all 0.2s ease-in-out;
+}
+
+#gunkasa-bridge-panel div {
+    user-select: none;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+}

@@ -11,6 +11,11 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { RealtimeManager } from "@/components/RealtimeManager";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { AutoSyncManager } from "@/components/AutoSyncManager";
+import { Archive } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useStore } from "@/store/useStore";
+import { cn } from "@/lib/utils";
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -24,15 +29,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const brightness = useStore((state) => state.settings.brightness);
+
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
+      </head>
+      <body className={cn(jakarta.className, "min-h-screen bg-background antialiased")} style={{ filter: `brightness(${brightness}%)` }}>
         <meta name="theme-color" content="#D71920" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      </head>
-      <body className={jakarta.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -50,7 +57,12 @@ export default function RootLayout({
                     <Sidebar />
                     <span className="font-extrabold text-lg tracking-tight uppercase italic hidden md:inline-block">GÜN<span className="text-primary not-italic">KASA</span></span>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Link href="/reports?tab=history">
+                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary transition-colors h-9 w-9 rounded-xl border border-border/50 bg-secondary/20">
+                        <Archive className="h-4 w-4" />
+                      </Button>
+                    </Link>
                     <ThemeToggle />
                   </div>
                 </div>

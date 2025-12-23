@@ -10,6 +10,7 @@ export const useStore = create<AppState>()(
             settings: {
                 theme: 'system',
                 isLoggedIn: false,
+                brightness: 100,
             },
             isLoading: false,
             userProfile: null,
@@ -42,6 +43,11 @@ export const useStore = create<AppState>()(
             setTheme: (theme) =>
                 set((state) => ({
                     settings: { ...state.settings, theme },
+                })),
+
+            setBrightness: (brightness) =>
+                set((state) => ({
+                    settings: { ...state.settings, brightness },
                 })),
 
             login: () =>
