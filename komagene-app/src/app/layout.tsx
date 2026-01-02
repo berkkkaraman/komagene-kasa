@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google"; // Correct import
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -18,11 +18,28 @@ import { useStore } from "@/store/useStore";
 import { cn } from "@/lib/utils";
 import { BrightnessOverlay } from "@/components/providers/BrightnessOverlay";
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Günkasa - İşletme Yönetim Paneli",
-  description: "Modern, Güvenli ve Akıllı İşletme Yönetimi",
+  title: "Günkasa - Akıllı İşletme Yönetimi",
+  description: "Modern, güvenli ve akıllı işletme yönetim sistemi.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Günkasa",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#D71920",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -31,14 +48,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" suppressHydrationWarning>
+    <html lang="tr" className="dark" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#D71920" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={cn(jakarta.className, "min-h-screen bg-background antialiased")}>
+      <body className={`${inter.className} antialiased bg-background text-foreground overflow-hidden`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -4,74 +4,83 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    /* Slightly off-white to reduce glare */
-    --foreground: 240 10% 3.9%;
+    /* Premium Light Theme */
+    --background: 210 40% 98%;
+    /* Cool white */
+    --foreground: 222 47% 11%;
+    /* Deep navy */
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 358 79% 47%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 346 77% 49%;
+    /* Gunkasa Red - Vibrant */
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 346.8 77.2% 49.8%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 346 77% 49%;
 
     --radius: 1rem;
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
   .dark {
-    /* Soft Dark Mode (Zinc Palette) */
-    --background: 240 10% 3.9%;
-    /* Zinc-950 */
-    --foreground: 240 5% 96%;
-    /* Zinc-100 */
+    /* Premium Dark Theme (Deep Blue/Grey) */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
 
-    --card: 240 6% 10%;
-    /* Zinc-900 - Lighter than BG */
-    --card-foreground: 240 5% 96%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 240 6% 10%;
-    --popover-foreground: 240 5% 96%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 358 65% 48%;
-    /* Günkasa Primary (Brand Color) */
-    --primary-foreground: 0 0% 100%;
+    --primary: 346 77% 49%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 240 5% 96%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 240 4% 16%;
-    --accent-foreground: 240 5% 96%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 4% 16%;
-    /* Zinc-800 */
-    --input: 240 4% 16%;
-    --ring: 358 65% 48%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 346 77% 49%;
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
-
 }
 
 @layer base {
@@ -80,14 +89,43 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20;
-    min-height: 100vh;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+    /* Clean modern typography features */
   }
 }
 
 @layer components {
+
+  /* Glassmorphism Utilities */
+  .glass-panel {
+    @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl;
+  }
+
   .glass-card {
-    @apply bg-white dark:bg-card/90 backdrop-blur-md border border-border shadow-xl transition-all duration-300;
+    @apply bg-white/80 dark:bg-card/50 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .glass-button {
+    @apply bg-white/90 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-black/5 dark:border-white/10 backdrop-blur-sm shadow-sm transition-all active:scale-95;
+  }
+
+  /* Gradient Text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-rose-600 dark:from-rose-400 dark:to-primary;
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500;
+  }
+
+  /* Animations */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-glow-sm hover:shadow-primary/50;
   }
 
   .glass-sidebar {
@@ -107,6 +145,7 @@
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
@@ -114,6 +153,14 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/40 transition-colors;
+    @apply bg-slate-200 dark:bg-slate-700/50 rounded-full hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
   }
 }

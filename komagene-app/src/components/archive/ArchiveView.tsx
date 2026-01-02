@@ -13,6 +13,7 @@ import { TrendingUp, TrendingDown, DollarSign, Wallet, FileSpreadsheet, Calendar
 import { cn } from "@/lib/utils";
 import { ComparativeReport } from "./ComparativeReport";
 import { ForecastCard } from "./ForecastCard";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 export function ArchiveView() {
@@ -358,58 +359,58 @@ export function ArchiveView() {
                         </div>
                     </CardContent>
                 </Card>
-            )}
-
             {/* Detailed History Table/List */}
             <div className="space-y-4">
                 <h3 className="text-xs font-black uppercase tracking-widest opacity-40 px-2 pb-2">Kayıt Detayları</h3>
-                <div className="grid grid-cols-1 gap-3">
-                    {chartData.slice().reverse().map((row, i) => (
-                        <Card key={i} className="border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-card/30 hover:bg-slate-50 dark:hover:bg-card/50 transition-all group overflow-hidden shadow-md rounded-2xl">
-                            <CardContent className="p-0">
-                                <div className="flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-white/5">
-                                    <div className="p-6 sm:w-48 text-center sm:text-left bg-slate-50 dark:bg-white/5 shrink-0">
-                                        <p className="text-[10px] font-black uppercase opacity-40 mb-1">Tarih</p>
-                                        <span className="text-lg font-black italic text-slate-700 dark:text-white">{row.tarih}</span>
-                                    </div>
-                                    <div className="p-6 flex-1 text-center">
-                                        <p className="text-[10px] font-black uppercase opacity-40 mb-1">Gelir</p>
-                                        <div className="flex items-center justify-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-black">
-                                            <ArrowUpRight className="h-4 w-4" />
-                                            <span className="text-xl tracking-tighter">{formatCurrency(row.gelir)}</span>
+                <ScrollArea className="h-[600px] rounded-2xl border-2 border-slate-200 dark:border-white/10 p-4">
+                    <div className="grid grid-cols-1 gap-3">
+                        {chartData.slice().reverse().map((row, i) => (
+                            <Card key={i} className="border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-card/30 hover:bg-slate-50 dark:hover:bg-card/50 transition-all group overflow-hidden shadow-md rounded-2xl">
+                                <CardContent className="p-0">
+                                    <div className="flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-white/5">
+                                        <div className="p-6 sm:w-48 text-center sm:text-left bg-slate-50 dark:bg-white/5 shrink-0">
+                                            <p className="text-[10px] font-black uppercase opacity-40 mb-1">Tarih</p>
+                                            <span className="text-lg font-black italic text-slate-700 dark:text-white">{row.tarih}</span>
+                                        </div>
+                                        <div className="p-6 flex-1 text-center">
+                                            <p className="text-[10px] font-black uppercase opacity-40 mb-1">Gelir</p>
+                                            <div className="flex items-center justify-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-black">
+                                                <ArrowUpRight className="h-4 w-4" />
+                                                <span className="text-xl tracking-tighter">{formatCurrency(row.gelir)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="p-6 flex-1 text-center">
+                                            <p className="text-[10px] font-black uppercase opacity-40 mb-1">Gider</p>
+                                            <div className="flex items-center justify-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold">
+                                                <ArrowDownRight className="h-4 w-4" />
+                                                <span className="text-xl tracking-tighter">{formatCurrency(row.gider)}</span>
+                                            </div>
+                                        </div>
+                                        <div className={cn(
+                                            "p-6 sm:w-64 text-center shrink-0 transition-colors",
+                                            row.net >= 0
+                                                ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                                : "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500"
+                                        )}>
+                                            <p className="text-[10px] font-black uppercase opacity-60 mb-1">Net Durum</p>
+                                            <span className="text-2xl font-black italic tracking-tighter">{formatCurrency(row.net)}</span>
                                         </div>
                                     </div>
-                                    <div className="p-6 flex-1 text-center">
-                                        <p className="text-[10px] font-black uppercase opacity-40 mb-1">Gider</p>
-                                        <div className="flex items-center justify-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold">
-                                            <ArrowDownRight className="h-4 w-4" />
-                                            <span className="text-xl tracking-tighter">{formatCurrency(row.gider)}</span>
-                                        </div>
-                                    </div>
-                                    <div className={cn(
-                                        "p-6 sm:w-64 text-center shrink-0 transition-colors",
-                                        row.net >= 0
-                                            ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                                            : "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500"
-                                    )}>
-                                        <p className="text-[10px] font-black uppercase opacity-60 mb-1">Net Durum</p>
-                                        <span className="text-2xl font-black italic tracking-tighter">{formatCurrency(row.net)}</span>
-                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                        {chartData.length === 0 && (
+                            <div className="py-20 text-center space-y-4 border-2 border-dashed border-white/5 rounded-3xl">
+                                <div className="mx-auto w-16 h-16 bg-white/5 rounded-full flex items-center justify-center">
+                                    <CalendarIcon className="h-8 w-8 opacity-20" />
                                 </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                    {chartData.length === 0 && (
-                        <div className="py-20 text-center space-y-4 border-2 border-dashed border-white/5 rounded-3xl">
-                            <div className="mx-auto w-16 h-16 bg-white/5 rounded-full flex items-center justify-center">
-                                <CalendarIcon className="h-8 w-8 opacity-20" />
+                                <p className="text-sm font-black uppercase tracking-widest opacity-30 italic">
+                                    Seçili periyotta kayıt bulunamadı
+                                </p>
                             </div>
-                            <p className="text-sm font-black uppercase tracking-widest opacity-30 italic">
-                                Seçili periyotta kayıt bulunamadı
-                            </p>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                </ScrollArea>
             </div>
         </div>
     );

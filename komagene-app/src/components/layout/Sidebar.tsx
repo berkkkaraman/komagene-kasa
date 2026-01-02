@@ -3,47 +3,35 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Archive, Settings, Menu, Package, Info, BarChart3, Building2 } from "lucide-react";
+import { LayoutDashboard, Settings, Menu, Package, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const routes = [
     {
-        label: "Panel",
+        label: "Dashboard",
         icon: LayoutDashboard,
-        href: "/admin",
-        color: "text-sky-500",
+        href: "/dashboard",
+        color: "text-primary",
     },
     {
-        label: "Ürün Kataloğu",
+        label: "Satış",
         icon: Package,
-        href: "/menu",
+        href: "/pos",
         color: "text-orange-500",
     },
     {
         label: "Raporlar",
         icon: BarChart3,
         href: "/reports",
-        color: "text-emerald-500",
+        color: "text-sky-500",
     },
     {
-        label: "İşletme Ayarları",
-        icon: Building2,
-        href: "/business",
-        color: "text-purple-500",
-    },
-    {
-        label: "Sistem Ayarları",
+        label: "Ayarlar",
         icon: Settings,
         href: "/settings",
         color: "text-gray-500",
-    },
-    {
-        label: "Dijital Menü",
-        icon: Menu,
-        href: "/signage/demo",
-        color: "text-red-500",
     },
 ];
 

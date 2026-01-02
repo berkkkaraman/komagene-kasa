@@ -17,14 +17,16 @@ export interface ZReport {
     id: string;
     branch_id: string;
     date: string;
-    receipt_no?: string; // Fiş No (Z No)
+    receipt_no?: string;
     raw_email_content?: string;
     total_amount: number;
     credit_card_total: number;
     cash_total: number;
     source: 'email_auto' | 'manual';
     status: 'pending' | 'processed' | 'error';
+    error_message?: string;
     created_at?: string;
+    updated_at?: string;
 }
 
 // Gider Kalemi
@@ -67,7 +69,7 @@ export interface InventoryItem {
 // Günlük Kayıt (Ana Yapı)
 export interface DailyRecord {
     id: string;
-    branch_id?: string;    // Şube ID (SaaS)
+    branch_id: string;
     date: string;
     income: IncomeData;
     expenses: ExpenseItem[];
@@ -76,7 +78,24 @@ export interface DailyRecord {
     shift: ShiftData;
     note: string;
     isSynced: boolean;
-    isClosed: boolean; // Gün kapatıldı mı?
+    isClosed: boolean;
+    is_automated?: boolean;
+    automation_source?: string;
+}
+
+// QR Sipariş Sistemi
+export interface Order {
+    id: string;
+    branch_id: string;
+    table_no: string;
+    items: any[];
+    total_amount: number;
+    status: 'pending' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+    source: string;
+    external_id?: string;
+    customer_note?: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
 // Kullanıcı Profili (SaaS)

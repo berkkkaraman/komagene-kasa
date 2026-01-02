@@ -56,7 +56,10 @@ export const LedgerService = {
      * Fetches records from Supabase and merges them.
      */
     async fetchFromCloud(branchId: string): Promise<DailyRecord[]> {
-        if (!branchId) return [];
+        if (!branchId) {
+            console.warn("⚠️ fetchFromCloud: Şube ID eksik, veri çekilmedi.");
+            return [];
+        }
 
         try {
             const { data, error } = await supabase
@@ -70,20 +73,19 @@ export const LedgerService = {
             return (data || []).map(row => ({
                 id: row.id,
                 date: row.date,
-                income: row.income,
-                expenses: row.expenses,
+                income: row.income || { cash: 0, creditCard: 0, online: { yemeksepeti: 0, getir: 0, trendyol: 0, gelal: 0 }, source: 'manual' },
+                expenses: row.expenses || [],
                 ledgers: row.ledgers || [],
                 inventory: row.inventory || [],
                 shift: row.shift || { cashOnStart: 0, cashOnEnd: 0, difference: 0 },
-                note: row.note,
+                note: row.note || '',
                 isSynced: true,
                 isClosed: row.is_closed || false,
                 branch_id: row.branch_id
             }));
 
         } catch (error) {
-
-            console.error('Fetch failed:', error);
+            console.error('❌ Veri Çekme Hatası (Cloud):', error);
             return [];
         }
     }

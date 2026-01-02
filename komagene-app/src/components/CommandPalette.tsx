@@ -68,6 +68,7 @@ export function CommandPalette() {
         if (!record) {
             record = {
                 id: crypto.randomUUID(),
+                branch_id: 'default', // Default branch for single-tenant mode
                 date: today,
                 income: {
                     cash: 0, creditCard: 0,

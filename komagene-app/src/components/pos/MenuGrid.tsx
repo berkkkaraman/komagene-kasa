@@ -36,68 +36,97 @@ export function MenuGrid() {
     });
 
     return (
-        <div className="flex flex-col h-full gap-4">
+        <div className="flex flex-col h-full gap-6">
             {/* Categories Bar */}
-            <ScrollArea className="w-full whitespace-nowrap pb-2">
-                <div className="flex gap-2">
-                    <Button
-                        variant={activeCategoryId === null ? "default" : "outline"}
-                        onClick={() => setActiveCategory(null)}
-                        className="rounded-xl h-10 px-6 font-bold"
-                    >
-                        Tümü
-                    </Button>
-                    {displayCategories.sort((a, b) => a.sort_order - b.sort_order).map(cat => (
+            <div className="relative">
+                <ScrollArea className="w-full whitespace-nowrap pb-4">
+                    <div className="flex gap-3 px-1">
                         <Button
-                            key={cat.id}
-                            variant={activeCategoryId === cat.id ? "default" : "outline"}
-                            onClick={() => setActiveCategory(cat.id)}
+                            variant={activeCategoryId === null ? "default" : "outline"}
+                            onClick={() => setActiveCategory(null)}
                             className={cn(
-                                "rounded-xl h-10 px-6 font-bold border-2 transition-all",
-                                activeCategoryId === cat.id
-                                    ? "shadow-md scale-105 border-primary"
-                                    : "border-transparent bg-white dark:bg-white/5 hover:bg-slate-100"
+                                "rounded-2xl h-12 px-8 font-display font-bold transition-all duration-300",
+                                activeCategoryId === null
+                                    ? "bg-primary text-white shadow-glow-sm shadow-primary/40 scale-105"
+                                    : "glass-card border-white/5 hover:bg-white/10"
                             )}
                         >
-                            {cat.name}
+                            Tümü
                         </Button>
-                    ))}
-                </div>
-            </ScrollArea>
+                        {displayCategories.sort((a, b) => a.sort_order - b.sort_order).map(cat => (
+                            <Button
+                                key={cat.id}
+                                variant={activeCategoryId === cat.id ? "default" : "outline"}
+                                onClick={() => setActiveCategory(cat.id)}
+                                className={cn(
+                                    "rounded-2xl h-12 px-8 font-display font-bold transition-all duration-300",
+                                    activeCategoryId === cat.id
+                                        ? "bg-primary text-white shadow-glow-sm shadow-primary/40 scale-105"
+                                        : "glass-card border-white/5 hover:bg-white/10"
+                                )}
+                            >
+                                {cat.name}
+                            </Button>
+                        ))}
+                    </div>
+                </ScrollArea>
+                <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+            </div>
 
             {/* Products Grid */}
-            <ScrollArea className="flex-1 pr-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-20">
+            <div className="flex-1 min-h-0">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-24">
                     {filteredProducts.map(product => (
                         <Card
                             key={product.id}
-                            className="group relative cursor-pointer overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-white/5 hover:-translate-y-1 rounded-2xl"
+                            className="group relative cursor-pointer overflow-hidden border-none glass-card hover-lift hover-glow transition-all duration-500 rounded-3xl"
                             onClick={() => addToBasket(product as Product)}
                         >
-                            <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-white/5 dark:to-white/10 relative">
-                                {/* Image placeholder */}
-                                <div className="absolute inset-0 flex items-center justify-center text-4xl opacity-20 group-hover:opacity-30 transition-opacity">
-                                    🌮
+                            <div className="aspect-[5/4] bg-muted/30 relative overflow-hidden">
+                                {/* Decor background */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent group-hover:scale-110 transition-transform duration-700" />
+
+                                {/* Image placeholder / Emoji */}
+                                <div className="absolute inset-0 flex items-center justify-center text-5xl group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 ease-bounce-out select-none">
+                                    {getEmojiForCategory(product.category_id || '')}
                                 </div>
+
+                                {/* Hot Label (Optional/Simulated) */}
+                                {product.price > 100 && (
+                                    <Badge className="absolute top-3 left-3 bg-primary/90 text-[10px] font-black uppercase tracking-tighter animate-pulse">
+                                        Favori
+                                    </Badge>
+                                )}
+
                                 <Button
                                     size="icon"
-                                    className="absolute bottom-2 right-2 h-8 w-8 rounded-full shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300"
+                                    className="absolute bottom-4 right-4 h-10 w-10 rounded-2xl shadow-xl opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 bg-primary/90 hover:bg-primary"
                                 >
-                                    <Plus className="h-4 w-4" />
+                                    <Plus className="h-5 w-5" />
                                 </Button>
                             </div>
-                            <CardContent className="p-4">
-                                <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1 group-hover:text-primary transition-colors">
+                            <CardContent className="p-5 space-y-1">
+                                <h3 className="font-display font-bold text-base leading-tight group-hover:text-primary transition-colors line-clamp-1">
                                     {product.name}
                                 </h3>
-                                <p className="text-lg font-black text-primary mt-1">
-                                    {product.price} ₺
-                                </p>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-xl font-black font-display tracking-tight text-gradient-gold">
+                                        {product.price}
+                                    </span>
+                                    <span className="text-xs font-bold text-muted-foreground">₺</span>
+                                </div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
-            </ScrollArea>
+            </div>
         </div>
     );
+}
+
+function getEmojiForCategory(catId: string) {
+    if (catId === '1') return "🌯";
+    if (catId === '2') return "🍱";
+    if (catId === '3') return "🥤";
+    return "🥡";
 }

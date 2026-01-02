@@ -25,12 +25,9 @@ const executeMigration = async () => {
         await client.connect();
         console.log('\x1b[32m%s\x1b[0m', '✅ Veritabanına bağlanıldı.');
 
-        // Çalıştırılacak dosyalar
+        // Çalıştırılacak dosyalar (V2 - Stabilized)
         const files = [
-            'MASTER_INITIALIZATION_V1.sql',
-            'orders_schema.sql',
-            'security_hardening.sql',
-            'automation_schema.sql'
+            'STABILIZED_SCHEMA_V2.sql'
         ];
 
         for (const file of files) {

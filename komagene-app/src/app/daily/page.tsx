@@ -2,9 +2,9 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-// Redirect /menu to /pos
-export default function MenuRedirect() {
+// Redirect /daily to /dashboard
+export default function DailyRedirect() {
     const router = useRouter();
-    useEffect(() => { router.replace("/pos"); }, [router]);
+    useEffect(() => { router.replace("/dashboard"); }, [router]);
     return null;
 }

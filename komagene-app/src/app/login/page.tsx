@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Lock, Mail, Loader2, Salad } from "lucide-react";
+import { Lock, Mail, Loader2, Salad, ArrowRight } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -36,28 +37,36 @@ export default function LoginPage() {
     return (
         <div className="h-screen w-full flex items-center justify-center p-4 bg-background relative overflow-hidden">
             {/* Background Decorative Elements */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/5 rounded-full blur-[120px]" />
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-rose-500/5 rounded-full blur-[120px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(215,25,32,0.03),transparent_70%)] pointer-events-none" />
 
-            <Card className="w-full max-w-md glass-card border-none shadow-2xl relative z-10">
-                <CardHeader className="text-center space-y-1">
-                    <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
-                        <Salad className="w-10 h-10 text-primary" />
+            <Card className="w-full max-w-md glass-panel border-white/10 shadow-2xl relative z-10 rounded-[3rem] overflow-hidden animate-in zoom-in-95 duration-700">
+                <CardHeader className="text-center space-y-3 pt-12 pb-8">
+                    <div className="mx-auto w-24 h-24 bg-gradient-to-br from-primary/20 to-rose-500/20 rounded-[2rem] flex items-center justify-center mb-6 shadow-glow-sm shadow-primary/10 border border-white/10">
+                        <Salad className="w-12 h-12 text-primary" />
                     </div>
-                    <CardTitle className="text-3xl font-extrabold tracking-tight">GÜNKASA</CardTitle>
-                    <CardDescription className="font-bold text-foreground/60 uppercase tracking-widest text-xs">
-                        İşletme Yönetim Sistemi
-                    </CardDescription>
+                    <CardTitle className="text-5xl font-display font-black tracking-tighter uppercase italic">
+                        GÜN<span className="text-primary not-italic">KASA</span>
+                    </CardTitle>
+                    <div className="flex items-center justify-center gap-2">
+                        <div className="h-px w-8 bg-primary/20" />
+                        <CardDescription className="font-display font-bold text-muted-foreground uppercase tracking-[0.3em] text-[9px]">
+                            PROFESYONEL YÖNETİM
+                        </CardDescription>
+                        <div className="h-px w-8 bg-primary/20" />
+                    </div>
                 </CardHeader>
                 <form onSubmit={handleLogin}>
-                    <CardContent className="space-y-4 pt-4">
+                    <CardContent className="space-y-6 px-10">
                         <div className="space-y-2">
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-50">E-Posta Adresi</Label>
+                            <div className="relative group">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 <Input
                                     type="email"
-                                    placeholder="E-posta"
-                                    className="pl-10 h-12 rounded-xl bg-white/50 dark:bg-accent/20 border-border/50"
+                                    placeholder="ornek@komagene.com"
+                                    className="pl-12 h-16 rounded-[1.5rem] glass-panel border-white/5 focus-visible:ring-primary/20 font-medium"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -65,12 +74,16 @@ export default function LoginPage() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <div className="flex justify-between items-center ml-1">
+                                <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Şifre</Label>
+                                <a href="#" className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">Şifremi Unuttum</a>
+                            </div>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 <Input
                                     type="password"
-                                    placeholder="Şifre"
-                                    className="pl-10 h-12 rounded-xl bg-white/50 dark:bg-accent/20 border-border/50"
+                                    placeholder="••••••••"
+                                    className="pl-12 h-16 rounded-[1.5rem] glass-panel border-white/5 focus-visible:ring-primary/20 font-medium"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
@@ -78,21 +91,28 @@ export default function LoginPage() {
                             </div>
                         </div>
                     </CardContent>
-                    <CardFooter className="pt-4 flex flex-col gap-4">
+                    <CardFooter className="px-10 pb-12 pt-10 flex flex-col gap-8">
                         <Button
                             type="submit"
-                            className="w-full h-12 text-lg font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
+                            className="w-full h-16 text-lg font-display font-black rounded-[1.5rem] shadow-2xl shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-95 transition-all gap-3 group relative overflow-hidden"
                             disabled={loading}
                         >
-                            {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Giriş Yap"}
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary via-rose-500 to-primary bg-[length:200%_100%] animate-gradient" />
+                            <div className="relative flex items-center justify-center gap-3">
+                                {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />}
+                                <span>{loading ? "GİRİŞ YAPILIYOR..." : "GİRİŞ YAP"}</span>
+                            </div>
                         </Button>
-                        <p className="text-sm text-center text-muted-foreground">
-                            Henüz hesabınız yok mu?{" "}
-                            <a href="/register" className="text-primary font-bold hover:underline">Ücretsiz Kayıt Olun</a>
-                        </p>
-                        <p className="text-[10px] text-center text-muted-foreground uppercase tracking-tighter">
-                            Ticari Kullanım Koşulları Geçerlidir &copy; 2024
-                        </p>
+                        <div className="space-y-6 text-center">
+                            <p className="text-xs font-bold text-muted-foreground">
+                                Henüz bir hesabınız yok mu?{" "}
+                                <a href="/register" className="text-primary font-black hover:underline uppercase tracking-tighter">Hemen Başlayın</a>
+                            </p>
+                            <div className="h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                            <p className="text-[10px] text-muted-foreground/30 font-black uppercase tracking-[0.5em]">
+                                &copy; 2024 SG-AI TEAM
+                            </p>
+                        </div>
                     </CardFooter>
                 </form>
             </Card>
