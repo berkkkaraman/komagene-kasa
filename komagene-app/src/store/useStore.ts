@@ -25,7 +25,7 @@ export const useStore = create<AppState>()(
                     records: [...state.records, {
                         ...record,
                         isSynced: false,
-                        branch_id: state.userProfile?.branch_id // Auto-assign branch_id
+                        branch_id: state.userProfile?.branch_id || record.branch_id // Auto-assign branch_id or keep existing
                     }]
                 })),
 
@@ -122,7 +122,7 @@ export const useStore = create<AppState>()(
                         note: '',
                         isSynced: false,
                         isClosed: false,
-                        branch_id: state.userProfile?.branch_id // Auto-assign branch_id
+                        branch_id: state.userProfile?.branch_id || '' // Auto-assign branch_id or fallback
                     };
 
                     set({

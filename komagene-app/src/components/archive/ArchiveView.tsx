@@ -359,6 +359,7 @@ export function ArchiveView() {
                         </div>
                     </CardContent>
                 </Card>
+            )}
             {/* Detailed History Table/List */}
             <div className="space-y-4">
                 <h3 className="text-xs font-black uppercase tracking-widest opacity-40 px-2 pb-2">Kayıt Detayları</h3>
